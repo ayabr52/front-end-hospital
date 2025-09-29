@@ -8,22 +8,22 @@ const RoomsList = ({ rooms, onEdit, onDelete }) => {
       <table className="min-w-full bg-white border border-gray-200 rounded-lg">
         <thead>
           <tr className="bg-gray-100 text-gray-600 uppercase text-sm leading-normal">
-            <th className="py-3 px-6 text-right">رمز الغرفة</th>
-            <th className="py-3 px-6 text-right">القسم</th>
-            <th className="py-3 px-6 text-right">الاختصاص</th>
-            <th className="py-3 px-6 text-right">الطابق</th>
-            <th className="py-3 px-6 text-right">عدد الأسرة</th>
+            <th className="py-3 px-6 text-right">رقم الغرفة</th> {/* تم التعديل */}
+            <th className="py-3 px-6 text-right">النوع</th> {/* إضافة حقل النوع */}
+            <th className="py-3 px-6 text-right">القسم</th> {/* تم التعديل */}
+            <th className="py-3 px-6 text-right">السعة (أسرة)</th> {/* تم التعديل */}
+            <th className="py-3 px-6 text-right">الحالة</th> {/* إضافة حقل الحالة */}
             <th className="py-3 px-6 text-center">الإجراءات</th>
           </tr>
         </thead>
         <tbody className="text-gray-700 text-sm font-light">
           {rooms.map((room) => (
             <tr key={room.id} className="border-b border-gray-200 hover:bg-gray-50">
-              <td className="py-3 px-6 text-right whitespace-nowrap">{room.code}</td>
-              <td className="py-3 px-6 text-right">{room.department_id}</td>
-              <td className="py-3 px-6 text-right">{room.specialty_id}</td>
-              <td className="py-3 px-6 text-right">{room.floor_number}</td>
-              <td className="py-3 px-6 text-right">{room.bed_capacity}</td>
+              <td className="py-3 px-6 text-right whitespace-nowrap">{room.room_number}</td> {/* تم التعديل */}
+              <td className="py-3 px-6 text-right">{room.type}</td> {/* عرض النوع */}
+              <td className="py-3 px-6 text-right">{room.department ? room.department.name : 'غير محدد'}</td> {/* تم التعديل */}
+              <td className="py-3 px-6 text-right">{room.capacity}</td> {/* تم التعديل */}
+              <td className="py-3 px-6 text-right">{room.status}</td> {/* عرض الحالة */}
               <td className="py-3 px-6 text-center whitespace-nowrap">
                 <div className="flex item-center justify-center space-x-2 space-x-reverse">
                   <button

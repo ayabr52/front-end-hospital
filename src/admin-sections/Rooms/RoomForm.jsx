@@ -3,19 +3,24 @@ import React, { useState, useEffect } from 'react';
 
 const RoomForm = ({ roomToEdit, onSave, onCancel }) => {
   const [formData, setFormData] = useState({
-    code: '',
-    department_id: '',
-    specialty_id: '',
-    floor_number: '',
-    bed_capacity: '',
+    room_number: '', // تم التعديل من 'code'
+    type: '',        // إضافة حقل النوع
+    capacity: '',    // تم التعديل من 'bed_capacity'
+    status: 'available', // إضافة حقل الحالة مع قيمة افتراضية
+    notes: '',       // إضافة حقل الملاحظات
+    department_id: '', // معرف القسم
   });
 
   useEffect(() => {
     if (roomToEdit) {
-      setFormData(roomToEdit);
+      setFormData({
+        ...roomToEdit,
+        // تأكد من أن department_id هو المعرف وليس الكائن
+        department_id: roomToEdit.department ? roomToEdit.department.id : '',
+      });
     } else {
       setFormData({
-        code: '', department_id: '', specialty_id: '', floor_number: '', bed_capacity: '',
+        room_number: '', type: '', capacity: '', status: 'available', notes: '', department_id: '',
       });
     }
   }, [roomToEdit]);
@@ -36,42 +41,58 @@ const RoomForm = ({ roomToEdit, onSave, onCancel }) => {
       </h3>
       <form onSubmit={handleSubmit} className="space-y-4 text-right">
         <div>
-          <label htmlFor="code" className="block text-gray-700 text-sm font-bold mb-2">رمز الغرفة</label>
-          <input type="text" id="code" name="code" value={formData.code} onChange={handleChange} className="shadow appearance-none border rounded-lg w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:shadow-outline text-right" required />
+          <label htmlFor="room_number" className="block text-gray-700 text-sm font-bold mb-2">رقم الغرفة</label>
+          <input type="text" id="room_number" name="room_number" value={formData.room_number} onChange={handleChange} className="shadow appearance-none border rounded-lg w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:shadow-outline text-right" required />
+        </div>
+        <div>
+          <label htmlFor="type" className="block text-gray-700 text-sm font-bold mb-2">نوع الغرفة</label>
+          <select id="type" name="type" value={formData.type} onChange={handleChange} className="shadow border rounded-lg w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:shadow-outline text-right appearance-none bg-white pr-8" required>
+            <option value="">اختر نوع الغرفة</option>
+            <option value="private">خاصة</option>
+            <option value="semi-private">شبه خاصة</option>
+            <option value="ward">جناح</option>
+            <option value="ICU">عناية مركزة (ICU)</option>
+            <option value="OR">غرفة عمليات (OR)</option>
+            {/* أضف أنواع الغرف الأخرى حسب الحاجة */}
+          </select>
+          <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center px-2 text-gray-700 mt-8">
+              <svg className="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/></svg>
+            </div>
+        </div>
+        <div>
+          <label htmlFor="capacity" className="block text-gray-700 text-sm font-bold mb-2">السعة (عدد الأسرة)</label>
+          <input type="number" id="capacity" name="capacity" value={formData.capacity} onChange={handleChange} className="shadow appearance-none border rounded-lg w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:shadow-outline text-right" min="0" required />
+        </div>
+        <div>
+          <label htmlFor="status" className="block text-gray-700 text-sm font-bold mb-2">الحالة</label>
+          <select id="status" name="status" value={formData.status} onChange={handleChange} className="shadow border rounded-lg w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:shadow-outline text-right appearance-none bg-white pr-8" required>
+            <option value="available">متاحة</option>
+            <option value="occupied">مشغولة</option>
+            <option value="maintenance">صيانة</option>
+            <option value="cleaning">تنظيف</option>
+          </select>
+          <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center px-2 text-gray-700 mt-8">
+              <svg className="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/></svg>
+            </div>
+        </div>
+        <div>
+          <label htmlFor="notes" className="block text-gray-700 text-sm font-bold mb-2">ملاحظات</label>
+          <textarea id="notes" name="notes" value={formData.notes} onChange={handleChange} className="shadow appearance-none border rounded-lg w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:shadow-outline text-right h-24 resize-none"></textarea>
         </div>
         <div>
           <label htmlFor="department_id" className="block text-gray-700 text-sm font-bold mb-2">القسم المرتبط</label>
-          <select id="department_id" name="department_id" value={formData.department_id} onChange={handleChange} className="shadow border rounded-lg w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:shadow-outline text-right appearance-none bg-white pr-8" required>
-            <option value="">اختر القسم</option>
-            <option value="النسائية والتوليد">النسائية والتوليد</option>
-            <option value="جراحة القلب">جراحة القلب</option>
-            {/* أضف الأقسام الحقيقية هنا */}
+          <select id="department_id" name="department_id" value={formData.department_id} onChange={handleChange} className="shadow border rounded-lg w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:shadow-outline text-right appearance-none bg-white pr-8">
+            <option value="">-- اختر القسم --</option>
+            {/* هذه الخيارات يجب أن تأتي من API الأقسام في تطبيق حقيقي */}
+            <option value="1">قسم العناية المركزة</option>
+            <option value="2">قسم النسائية والتوليد</option>
+            <option value="3">قسم العمليات الجراحية</option>
+            <option value="4">قسم الداخلية</option>
+            <option value="5">قسم الأطفال</option>
           </select>
           <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center px-2 text-gray-700 mt-8">
               <svg className="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/></svg>
             </div>
-        </div>
-        <div>
-          <label htmlFor="specialty_id" className="block text-gray-700 text-sm font-bold mb-2">الاختصاص</label>
-          <select id="specialty_id" name="specialty_id" value={formData.specialty_id} onChange={handleChange} className="shadow border rounded-lg w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:shadow-outline text-right appearance-none bg-white pr-8" required>
-            <option value="">اختر الاختصاص</option>
-            <option value="جراحة">جراحة</option>
-            <option value="داخلية">داخلية</option>
-            {/* أضف الاختصاصات الحقيقية هنا */}
-          </select>
-          <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center px-2 text-gray-700 mt-8">
-              <svg className="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/></svg>
-            </div>
-        </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div>
-            <label htmlFor="floor_number" className="block text-gray-700 text-sm font-bold mb-2">الطابق</label>
-            <input type="number" id="floor_number" name="floor_number" value={formData.floor_number} onChange={handleChange} className="shadow appearance-none border rounded-lg w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:shadow-outline text-right" required />
-          </div>
-          <div>
-            <label htmlFor="bed_capacity" className="block text-gray-700 text-sm font-bold mb-2">عدد الأسرة</label>
-            <input type="number" id="bed_capacity" name="bed_capacity" value={formData.bed_capacity} onChange={handleChange} className="shadow appearance-none border rounded-lg w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:shadow-outline text-right" required />
-          </div>
         </div>
         <div className="flex justify-end space-x-4 space-x-reverse">
           <button

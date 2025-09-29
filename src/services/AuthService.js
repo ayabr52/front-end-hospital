@@ -1,76 +1,115 @@
 // src/services/AuthService.js
+import axios from 'axios';
 
-const USER_STORAGE_KEY = 'currentUser';
+const API_URL = import.meta.env.VITE_API_BASE_URL; // استخدام متغير البيئة
+const USER_TOKEN_KEY = 'userToken'; // مفتاح لتخزين رمز التوثيق
+const USER_DATA_KEY = 'userData';   // مفتاح لتخزين بيانات المستخدم
 
-// محاكاة تسجيل الدخول: تخزين معلومات المستخدم والدور في localStorage
-export const login = (email, password) => {
-  // في تطبيق حقيقي، هنا سترسل طلب POST إلى API للمصادقة
-  // بناءً على البريد الإلكتروني وكلمة المرور، سيقوم الخادم بإرجاع معلومات المستخدم ودوره
-  // سنقوم هنا بمحاكاة أدوار مختلفة بناءً على البريد الإلكتروني
-  let user = null;
-  if (email === 'admin@example.com' && password === 'password') {
-    user = { id: 'admin1', name: 'مدير النظام', email: email, role: 'admin' };
-  } else if (email === 'patient@example.com' && password === 'password') {
-    user = { id: 'patient1', name: 'مريض تجريبي', email: email, role: 'patient' };
-  } else if (email === 'doctor@example.com' && password === 'password') {
-    user = { id: 'doctor1', name: 'د. أحمد', email: email, role: 'doctor' };
-  } else if (email === 'nurse@example.com' && password === 'password') {
-    user = { id: 'nurse1', name: 'ممرضة سارة', email: email, role: 'nurse' };
-  } else if (email === 'reception@example.com' && password === 'password') {
-    user = { id: 'reception1', name: 'موظف استقبال', email: email, role: 'receptionist' };
-  } else if (email === 'accountant@example.com' && password === 'password') {
-    user = { id: 'accountant1', name: 'محاسب خالد', email: email, role: 'accountant' };
-  } else if (email === 'pharmacist@example.com' && password === 'password') {
-    user = { id: 'pharmacist1', name: 'صيدلي علي', email: email, role: 'pharmacist' };
-  } else if (email === 'receptionist@example.com' && password === 'password') {
-    user = { id: 'receptionist1', name: ' موظف الاستقبال مازن', email: email, role: 'receptionist' };
+// دالة مساعدة لإرسال حدث مخصص عند تغيير حالة المصادقة
+const dispatchAuthChangeEvent = () => {
+  window.dispatchEvent(new Event('authChange'));
+};
+
+// دالة لتسجيل الدخول
+export const login = async (email, password) => {
+  try {
+    const response = await axios.post(`${API_URL}/login`, {
+      email,
+      password,
+    });
+
+    if (response.data.access_token) {
+      // دمج الدور داخل كائن المستخدم (بناءً على شكل الاستجابة)
+      const userWithRole = {
+        ...response.data.user,
+        role: {
+          name: response.data.role
+        }
+      };
+
+      localStorage.setItem(USER_TOKEN_KEY, response.data.access_token);
+      localStorage.setItem(USER_DATA_KEY, JSON.stringify(userWithRole));
+      dispatchAuthChangeEvent(); // إرسال الحدث بعد تسجيل الدخول بنجاح
+    }
+
+    return response.data;
+  } catch (error) {
+    console.error('Login error:', error.response?.data || error.message);
+    throw error; // إعادة رمي الخطأ لكي يتم التعامل معه في المكون
   }
+};
 
-  if (user) {
-    localStorage.setItem(USER_STORAGE_KEY, JSON.stringify(user));
-    return user;
+// دالة لتسجيل مستخدم جديد
+export const register = async (userData) => {
+  try {
+    const response = await axios.post(`${API_URL}/register`, userData);
+    return response.data;
+  } catch (error) {
+    console.error('Registration error:', error.response?.data || error.message);
+    throw error;
   }
-  return null; // فشل تسجيل الدخول
 };
 
-// محاكاة تسجيل مريض جديد: تخزين معلومات المريض الجديد ودوره
-export const registerPatient = (patientData) => {
-  // في تطبيق حقيقي، هنا سترسل طلب POST إلى API لتسجيل مريض جديد
-  // بعد التسجيل الناجح، سيعود الخادم بمعلومات المريض الجديد
-  const newUser = {
-    id: `patient_${Date.now()}`, // معرف فريد مؤقت
-    name: patientData.firstName + ' ' + patientData.lastName,
-    email: patientData.email,
-    role: 'patient', // الدور الافتراضي للمريض الجديد
-    ...patientData // إضافة باقي البيانات
-  };
-  localStorage.setItem(USER_STORAGE_KEY, JSON.stringify(newUser));
-  return newUser;
-};
-
-// تسجيل الخروج: إزالة معلومات المستخدم من localStorage
-export const logout = () => {
-  localStorage.removeItem(USER_STORAGE_KEY);
-};
-
-// الحصول على معلومات المستخدم الحالي من localStorage
-export const getCurrentUser = () => {
-  const userStr = localStorage.getItem(USER_STORAGE_KEY);
-  if (userStr) {
-    return JSON.parse(userStr);
+// دالة لتسجيل الخروج
+export const logout = async () => {
+  try {
+    await axios.post(`${API_URL}/logout`, {}, {
+      headers: {
+        Authorization: `Bearer ${getToken()}`,
+      },
+    });
+  } catch (error) {
+    console.error('Logout error:', error.response?.data || error.message);
+  } finally {
+    localStorage.removeItem(USER_TOKEN_KEY);
+    localStorage.removeItem(USER_DATA_KEY);
+    dispatchAuthChangeEvent();
   }
-  return null;
 };
 
-// التحقق مما إذا كان المستخدم مسجلاً الدخول
+// دالة للحصول على رمز التوثيق المخزن
+export const getToken = () => {
+  return localStorage.getItem(USER_TOKEN_KEY);
+};
+
+// دالة للحصول على بيانات المستخدم المخزنة
+export const getUserData = () => {
+  const userData = localStorage.getItem(USER_DATA_KEY);
+  return userData ? JSON.parse(userData) : null;
+};
+
+// دالة للتحقق مما إذا كان المستخدم مسجلاً الدخول
 export const isAuthenticated = () => {
-  return !!getCurrentUser();
+  return !!getToken();
 };
 
-// التحقق من دور المستخدم
+// دالة للتحقق من دور المستخدم
 export const isAuthorized = (requiredRoles) => {
-  const user = getCurrentUser();
-  if (!user) return false;
-  if (!requiredRoles || requiredRoles.length === 0) return true; // إذا لم تكن هناك أدوار مطلوبة، فالمستخدم مصرح له
-  return requiredRoles.includes(user.role);
+  const user = getUserData();
+  if (!user || !user.role) return false;
+  if (!requiredRoles || requiredRoles.length === 0) return true;
+
+  return requiredRoles.includes(user.role.name);
+};
+
+// دالة للحصول على معلومات المستخدم من API (مثلاً عند تحميل التطبيق)
+export const fetchCurrentUser = async () => {
+  try {
+    const token = getToken();
+    if (!token) return null;
+
+    const response = await axios.get(`${API_URL}/user`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    // تأكد من أن استجابة /user تحتوي على role
+    localStorage.setItem(USER_DATA_KEY, JSON.stringify(response.data));
+    return response.data;
+  } catch (error) {
+    console.error('Failed to fetch current user:', error.response?.data || error.message);
+    logout();
+    return null;
+  }
 };

@@ -13,8 +13,8 @@ export default function Services() {
   ];
 
   return (
-    <div className="flex flex-col min-h-screen">
-      <main className="flex-grow container mx-auto p-4 md:p-8" id="services"> {/* Added id for services section */}
+    <div className="flex flex-col min-h-screen" id="services">
+      <main className="flex-grow container mx-auto p-4 md:p-8" > {/* Added id for services section */}
         <h2 className="text-3xl md:text-4xl font-bold text-blue-800 mb-8 text-right relative pb-2">
           خدماتنا
           <span className="absolute bottom-0 right-0 w-16 h-1 bg-blue-600 rounded-full"></span>

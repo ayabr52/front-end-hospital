@@ -1,6 +1,6 @@
 // src/dashboards/PharmacistDashboard.jsx
 import React, { useState } from 'react';
-import { getCurrentUser, logout } from '../services/AuthService';
+import { getUserData , logout } from '../services/AuthService';
 import { useNavigate } from 'react-router-dom';
 import {
   Pill, FileText, LogOut, User as UserIcon, Bell, Settings
@@ -11,7 +11,7 @@ import PharmacistMedicines from '../pharmacist-sections/Medicines/PharmacistMedi
 import PharmacistPrescriptions from '../pharmacist-sections/Prescriptions/PharmacistPrescriptions';
 
 const PharmacistDashboard = () => {
-  const user = getCurrentUser();
+  const user = getUserData ();
   const navigate = useNavigate();
   const [activeSection, setActiveSection] = useState('medicines'); // القسم النشط الافتراضي
 
@@ -32,7 +32,7 @@ const PharmacistDashboard = () => {
   };
 
   return (
-    <div className="flex min-h-screen bg-gray-100">
+    <div className="flex min-h-screen bg-gray-100 paddingTop">
       {/* Sidebar */}
       <aside className="w-64 bg-blue-800 text-white flex flex-col p-4 shadow-lg fixed h-full right-0"> {/* fixed right-0 for RTL sidebar */}
         <div className="text-center mb-8">

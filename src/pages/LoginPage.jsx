@@ -2,51 +2,60 @@
 import React, { useState } from 'react';
 import { Eye, EyeOff, Fingerprint } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import { login } from '../services/AuthService'; // استيراد خدمة المصادقة
+import { login } from '../services/AuthService'; // استيراد خدمة المصادقة الحقيقية
 
 const LoginPage = () => {
   const [passwordVisible, setPasswordVisible] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [error, setError] = useState(''); // حالة لتخزين رسائل الخطأ
   const navigate = useNavigate();
 
   const togglePasswordVisibility = () => {
     setPasswordVisible(!passwordVisible);
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => { // جعل الدالة غير متزامنة
     e.preventDefault();
-    const user = login(email, password); // محاولة تسجيل الدخول
-    if (user) {
-      alert(`مرحباً ${user.name}! تم تسجيل الدخول بنجاح كـ ${user.role}.`);
-      // التوجيه إلى لوحة التحكم المناسبة بناءً على الدور
-      switch (user.role) {
-        case 'admin':
-          navigate('/dashboard/admin');
-          break;
-        case 'patient':
-          navigate('/dashboard/patient');
-          break;
-        case 'doctor':
-          navigate('/dashboard/doctor');
-          break;
-        case 'nurse':
-          navigate('/dashboard/nurse');
-          break;
-        case 'receptionist':
-          navigate('/dashboard/receptionist');
-          break;
-        case 'accountant':
-          navigate('/dashboard/accountant');
-          break;
-        case 'pharmacist':
-          navigate('/dashboard/pharmacist');
-          break;
-        default:
-          navigate('/'); // العودة للصفحة الرئيسية إذا كان الدور غير معروف
+    setError(''); // مسح أي أخطاء سابقة
+    try {
+      const response = await login(email, password); // استدعاء دالة تسجيل الدخول من AuthService
+      if (response && response.access_token) {
+        alert(`مرحباً ${response.user.name}! تم تسجيل الدخول بنجاح كـ ${response.user.role.name}.`);
+        // التوجيه إلى لوحة التحكم المناسبة بناءً على الدور
+        switch (response.user.role.name) {
+          case 'admin':
+            navigate('/dashboard/admin');
+            break;
+          case 'patient':
+            navigate('/dashboard/patient');
+            break;
+          case 'doctor':
+            navigate('/dashboard/doctor');
+            break;
+          case 'nurse':
+            navigate('/dashboard/nurse');
+            break;
+          case 'receptionist':
+            navigate('/dashboard/receptionist');
+            break;
+          case 'accountant':
+            navigate('/dashboard/accountant');
+            break;
+          case 'pharmacist':
+            navigate('/dashboard/pharmacist');
+            break;
+          default:
+            navigate('/'); // العودة للصفحة الرئيسية إذا كان الدور غير معروف
+        }
+      } else {
+        setError('فشل تسجيل الدخول. استجابة غير متوقعة من الخادم.');
       }
-    } else {
-      alert('فشل تسجيل الدخول. يرجى التحقق من البريد الإلكتروني وكلمة المرور.');
+    } catch (err) {
+      // التعامل مع الأخطاء من الـ API
+      const errorMessage = err.response?.data?.message || 'فشل تسجيل الدخول. يرجى التحقق من البريد الإلكتروني وكلمة المرور.';
+      setError(errorMessage);
+      console.error('Login failed:', err);
     }
   };
 
@@ -98,6 +107,9 @@ const LoginPage = () => {
               {passwordVisible ? <EyeOff size={20} /> : <Eye size={20} />}
             </button>
           </div>
+          {error && (
+            <p className="text-red-500 text-sm text-center">{error}</p>
+          )}
           <div className="text-left">
             <a href="#" className="inline-block align-baseline font-bold text-sm text-blue-600 hover:text-blue-800">
               هل نسيت كلمة المرور؟

@@ -21,7 +21,7 @@ const DepartmentsList = ({ departments, onEdit, onDelete }) => {
               <td className="py-3 px-6 text-right whitespace-nowrap">{dept.name}</td>
               <td className="py-3 px-6 text-right">{dept.description}</td>
               <td className="py-3 px-6 text-right">{dept.specialty}</td>
-              <td className="py-3 px-6 text-right">{dept.createdAt}</td>
+              <td className="py-3 px-6 text-right">{new Date(dept.created_at).toLocaleDateString()}</td> {/* تم التعديل */}
               <td className="py-3 px-6 text-center whitespace-nowrap">
                 <div className="flex item-center justify-center space-x-2 space-x-reverse">
                   <button

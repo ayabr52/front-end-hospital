@@ -6,3 +6,11 @@ html , body{
     direction:rtl;
 }
 
+
+.paddingTop{
+    padding-top: 5%;
+}
+
+iframe{
+    width:100% !important
+}

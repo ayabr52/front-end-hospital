@@ -1,24 +1,35 @@
 // src/admin-sections/Departments/AdminDepartments.jsx
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Plus } from 'lucide-react';
 import DepartmentsList from './DepartmentsList';
 import DepartmentForm from './DepartmentForm';
-
-const initialDepartments = [
-  { id: 1, name: 'النسائية والتوليد', description: 'قسم النسائية والتوليد', specialty: 'جراحة', createdAt: '2024-10-15' },
-  { id: 2, name: 'القسطرة وجراحة القلب', description: 'قسم القسطرة وجراحة القلب', specialty: 'جراحة', createdAt: '2024-10-15' },
-  { id: 3, name: 'التجميل والجراحة التجميلية', description: 'قسم التجميل والجراحة التجميلية', specialty: 'جراحة', createdAt: '2024-10-15' },
-  { id: 4, name: 'البولية', description: 'قسم البولية', specialty: 'داخلية', createdAt: '2024-10-15' },
-  { id: 5, name: 'الهضمية', description: 'قسم الهضمية والأمراض الداخلية', specialty: 'داخلية', createdAt: '2024-10-15' },
-  { id: 6, name: 'العظمية', description: 'قسم العظمية وأمراض المفاصل', specialty: 'داخلية', createdAt: '2024-10-15' },
-  { id: 7, name: 'العينية', description: 'قسم العمليات والجراحات العينية', specialty: 'جراحة', createdAt: '2024-10-15' },
-  { id: 8, name: 'الجلدية', description: 'قسم الأمراض الجلدية والتناسلية', specialty: 'جلدية', createdAt: '2024-10-15' },
-];
+import { getDepartments, addDepartment, updateDepartment, deleteDepartment } from '../../services/DepartmentService'; // استيراد خدمات الأقسام
 
 const AdminDepartments = () => {
-  const [departments, setDepartments] = useState(initialDepartments);
+  const [departments, setDepartments] = useState([]);
   const [viewMode, setViewMode] = useState('list'); // 'list', 'add', 'edit'
   const [selectedDepartment, setSelectedDepartment] = useState(null); // للقسم الذي يتم تعديله
+  const [loading, setLoading] = useState(true); // حالة التحميل
+  const [error, setError] = useState(null); // حالة الأخطاء
+
+  // دالة لجلب الأقسام من الـ API
+  const fetchDepartments = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const data = await getDepartments();
+      setDepartments(data);
+    } catch (err) {
+      setError('فشل في جلب الأقسام: ' + (err.response?.data?.message || err.message));
+      console.error('Failed to fetch departments:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchDepartments(); // جلب الأقسام عند تحميل المكون
+  }, []);
 
   const handleAddDepartment = () => {
     setSelectedDepartment(null); // للتأكد من أن النموذج فارغ للإضافة
@@ -30,29 +41,75 @@ const AdminDepartments = () => {
     setViewMode('edit');
   };
 
-  const handleDeleteDepartment = (id) => {
+  const handleDeleteDepartment = async (id) => {
     if (window.confirm('هل أنت متأكد أنك تريد حذف هذا القسم؟')) {
-      setDepartments(departments.filter(dept => dept.id !== id));
+      try {
+        await deleteDepartment(id);
+        alert('تم حذف القسم بنجاح.');
+        fetchDepartments(); // إعادة جلب الأقسام بعد الحذف
+      } catch (err) {
+        alert('فشل في حذف القسم: ' + (err.response?.data?.message || err.message));
+        console.error('Failed to delete department:', err);
+      }
     }
   };
 
-  const handleSaveDepartment = (departmentData) => {
-    if (departmentData.id && departments.some(d => d.id === departmentData.id)) {
-      // تعديل قسم موجود
-      setDepartments(departments.map(dept =>
-        dept.id === departmentData.id ? departmentData : dept
-      ));
-    } else {
-      // إضافة قسم جديد
-      setDepartments([...departments, { ...departmentData, id: Date.now() }]); // معرف مؤقت جديد
+  const handleSaveDepartment = async (departmentData) => {
+    setError(null);
+    try {
+      if (departmentData.id && departments.some(d => d.id === departmentData.id)) {
+        // تعديل قسم موجود
+        await updateDepartment(departmentData.id, {
+          name: departmentData.name,
+          description: departmentData.description,
+          specialty: departmentData.specialty,
+        });
+        alert('تم تحديث القسم بنجاح.');
+      } else {
+        // إضافة قسم جديد
+        await addDepartment({
+          name: departmentData.name,
+          description: departmentData.description,
+          specialty: departmentData.specialty,
+        });
+        alert('تم إضافة القسم بنجاح.');
+      }
+      setViewMode('list'); // العودة إلى عرض القائمة
+      fetchDepartments(); // إعادة جلب الأقسام بعد الحفظ
+    } catch (err) {
+      const errorMessage = err.response?.data?.message || err.message;
+      const validationErrors = err.response?.data?.errors;
+      let fullErrorMessage = errorMessage;
+      if (validationErrors) {
+        fullErrorMessage += '\n' + Object.values(validationErrors).map(e => e.join(', ')).join('\n');
+      }
+      alert('فشل في حفظ القسم: ' + fullErrorMessage);
+      console.error('Failed to save department:', err);
     }
-    setViewMode('list'); // العودة إلى عرض القائمة
   };
 
   const handleCancelForm = () => {
     setViewMode('list'); // العودة إلى عرض القائمة
     setSelectedDepartment(null);
+    setError(null); // مسح الأخطاء عند الإلغاء
   };
+
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center h-64">
+        <p className="text-blue-600 text-lg">جاري تحميل الأقسام...</p>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
+        <strong className="font-bold">خطأ!</strong>
+        <span className="block sm:inline"> {error}</span>
+      </div>
+    );
+  }
 
   return (
     <div className="bg-white p-6 rounded-lg shadow-md">

@@ -140,7 +140,7 @@ const PharmacistMedicines = () => {
                 <tr key={medicine.id} className="border-b border-gray-200 hover:bg-gray-50">
                   <td className="py-3 px-6 text-right whitespace-nowrap">{medicine.name}</td>
                   <td className="py-3 px-6 text-right">{medicine.quantity}</td>
-                  <td className="py-3 px-6 text-right">{medicine.price.toFixed(2)} $</td>
+                  <td className="py-3 px-6 text-right">{medicine.price} $</td>
                   <td className="py-3 px-6 text-right">{medicine.expiry_date}</td>
                   <td className="py-3 px-6 text-center whitespace-nowrap">
                     <div className="flex item-center justify-center space-x-2 space-x-reverse">

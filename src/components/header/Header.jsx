@@ -1,164 +1,153 @@
-import { LogIn, LogOut, Menu, UserPlus, X } from 'lucide-react';
-import React, { useState } from 'react';
+// src/components/header/Header.jsx
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { getCurrentUser, logout } from '../../services/AuthService'; // استيراد خدمة الحصول على المستخدم الحالي
+import { Menu, X, User, LogOut } from 'lucide-react';
+import { isAuthenticated, getUserData, logout } from '../../services/AuthService'; // استخدام getUserData
 
-export default function Header() {
+const Header = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const navigate = useNavigate(); // Hook to programmatically navigate
-  const currentUser = getCurrentUser(); // الحصول على معلومات المستخدم الحالي
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [userName, setUserName] = useState('');
+  const [userRole, setUserRole] = useState('');
+  const navigate = useNavigate();
 
-  const navItems = [
-    { name: 'الرئيسية', href: '#home' },
-    { name: 'الخدمات', href: '#services' },
-    { name: 'أطباؤنا', href: '#doctors' },
-    { name: 'حول', href: '#about' },
-    { name: 'أقسامنا', href: '#departments' },
-    { name: 'النصائح', href: '#tips' },
-    { name: 'تواصل معنا', href: '#contact' },
+  // دالة لتهيئة حالة المصادقة بناءً على localStorage
+  const checkAuthStatus = () => {
+    const authStatus = isAuthenticated();
+    setIsLoggedIn(authStatus);
+    if (authStatus) {
+      const userData = getUserData(); // استخدام getUserData
+      if (userData) {
+        setUserName(userData.name);
+        setUserRole(userData.role.name); // الوصول إلى اسم الدور
+      }
+    } else {
+      setUserName('');
+      setUserRole('');
+    }
+  };
 
-  ];
+  useEffect(() => {
+    // التحقق من حالة المصادقة عند تحميل المكون لأول مرة
+    checkAuthStatus();
 
-  const handleLogout = () => {
-    logout(); // استدعاء دالة تسجيل الخروج
-    navigate('/login'); // التوجيه إلى صفحة تسجيل الدخول
-    setIsMobileMenuOpen(false); // إغلاق قائمة الجوال بعد تسجيل الخروج
+    // إضافة مستمع لحدث 'authChange'
+    window.addEventListener('authChange', checkAuthStatus);
+
+    // إزالة المستمع عند إلغاء تحميل المكون لتجنب تسرب الذاكرة
+    return () => {
+      window.removeEventListener('authChange', checkAuthStatus);
+    };
+  }, []); // تشغيل مرة واحدة عند التحميل والإزالة عند إلغاء التحميل
+
+  const handleLogout = async () => {
+    await logout();
+    // حالة isLoggedIn و userName و userRole ستتحدث تلقائياً بفضل مستمع الحدث
+    navigate('/login');
+  };
+
+  const getDashboardLink = () => {
+    switch (userRole) {
+      case 'admin':
+        return '/dashboard/admin';
+      case 'patient':
+        return '/dashboard/patient';
+      case 'doctor':
+        return '/dashboard/doctor';
+      case 'nurse':
+        return '/dashboard/nurse';
+      case 'receptionist':
+        return '/dashboard/receptionist';
+      case 'accountant':
+        return '/dashboard/accountant';
+      case 'pharmacist':
+        return '/dashboard/pharmacist';
+      default:
+        return '/';
+    }
   };
 
   return (
-    <header className="bg-white shadow-md p-4 sticky top-0 z-50">
-      <div className="container mx-auto flex justify-between items-center flex-wrap">
-        {/* Logo on the right */}
-        <div className="order-1 md:order-none">
-          <img
-            src="https://farzathpu.com/wp-content/uploads/2025/03/photo_2025-03-23_21-11-11-removebg-preview.png"
-            alt="Logo"
-            className="h-14 w-auto"
-          />
-        </div>
+    <header className="fixed w-full bg-white shadow-md z-50">
+      <div className="container mx-auto px-4 py-4 flex justify-between items-center">
+        {/* Logo */}
+        <Link to="/" className="flex items-center space-x-2 space-x-reverse">
+          <img src="https://farzathpu.com/wp-content/uploads/2025/03/photo_2025-03-23_21-11-11-removebg-preview.png" alt="Hospital Logo" className="h-10 w-10 rounded-full" />
+        </Link>
 
-        {/* Login/Register/Logout Buttons (Left side for desktop) */}
-        <div className="hidden md:flex space-x-2 order-3">
-          {!currentUser ? ( // شرط لإظهار أزرار تسجيل الدخول/التسجيل إذا لم يكن المستخدم مسجلاً دخوله
+        {/* Desktop Navigation */}
+        <nav className="hidden md:flex items-center space-x-8 space-x-reverse">
+          <Link to="/" className="text-gray-700 hover:text-blue-600 transition-colors duration-200">الرئيسية</Link>
+          <Link to="/#services" className="text-gray-700 hover:text-blue-600 transition-colors duration-200">خدماتنا</Link>
+          <Link to="/#doctors" className="text-gray-700 hover:text-blue-600 transition-colors duration-200">أطباؤنا</Link>
+          <Link to="/#tips" className="text-gray-700 hover:text-blue-600 transition-colors duration-200">نصائح صحية</Link>
+          <Link to="/#about" className="text-gray-700 hover:text-blue-600 transition-colors duration-200">عن المستشفى</Link>
+          <Link to="/#departments" className="text-gray-700 hover:text-blue-600 transition-colors duration-200">الأقسام</Link>
+          <Link to="/#contact" className="text-gray-700 hover:text-blue-600 transition-colors duration-200">اتصل بنا</Link>
+          
+          {isLoggedIn ? (
             <>
-              <Link
-                to="/register" // Use Link for navigation
-                className="bg-blue-600 text-white px-4 py-2 rounded-full hover:bg-blue-700 transition-colors duration-200 flex items-center"
-              >
-                <UserPlus size={18} className="ml-1" />
-                تسجيل مريض جديد
+              <Link to={getDashboardLink()} className="text-blue-600 font-semibold hover:text-blue-800 transition-colors duration-200 flex items-center">
+                <User size={18} className="ml-1" />
+                لوحة التحكم ({userName})
               </Link>
-              <Link
-                to="/login" // Use Link for navigation
-                className="bg-blue-800 text-white px-4 py-2 rounded-full hover:bg-blue-900 transition-colors duration-200 flex items-center"
-              >
-                <LogIn size={18} className="ml-1" />
-                تسجيل الدخول
-              </Link>
+              <button onClick={handleLogout} className="text-red-600 font-semibold hover:text-red-800 transition-colors duration-200 flex items-center">
+                <LogOut size={18} className="ml-1" />
+                خروج
+              </button>
             </>
-          ) : ( // إظهار زر تسجيل الخروج إذا كان المستخدم مسجلاً دخوله
-            <button
-              onClick={handleLogout}
-              className="bg-red-600 text-white px-4 py-2 rounded-full hover:bg-red-700 transition-colors duration-200 flex items-center"
-            >
-              <LogOut size={18} className="ml-1" />
-              تسجيل الخروج
-            </button>
+          ) : (
+            <>
+              <Link to="/login" className="text-blue-600 font-semibold hover:text-blue-800 transition-colors duration-200">تسجيل الدخول</Link>
+              <Link to="/register" className="bg-blue-600 text-white px-4 py-2 rounded-full hover:bg-blue-700 transition-colors duration-200">تسجيل جديد</Link>
+            </>
           )}
-        </div>
+        </nav>
 
-        {/* Mobile menu button */}
-        <div className="md:hidden order-4">
-          <button onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)} className="text-blue-800 focus:outline-none">
+        {/* Mobile Menu Button */}
+        <div className="md:hidden">
+          <button onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)} className="text-gray-700">
             {isMobileMenuOpen ? <X size={28} /> : <Menu size={28} />}
           </button>
         </div>
+      </div>
 
-        {/* Desktop Navigation (Right side, ordered RTL) */}
-        <nav className="hidden md:flex flex-grow justify-around space-x-8 text-lg font-medium text-gray-700 order-2">
-          <ul className="flex flex-row space-x-8 ">
-            {navItems.map((item) => (
-              <li key={item.name}>
-                <a
-                  href={item.href}
-                  className="hover:text-blue-600 transition-colors duration-200 focus:outline-none"
-                  onClick={() => {
-                    // Navigate to home path first, then scroll
-                    if (window.location.pathname !== '/') {
-                      navigate('/');
-                      setTimeout(() => {
-                        document.querySelector(item.href)?.scrollIntoView({ behavior: 'smooth' });
-                      }, 100); // Small delay to allow navigation
-                    } else {
-                      document.querySelector(item.href)?.scrollIntoView({ behavior: 'smooth' });
-                    }
-                    setIsMobileMenuOpen(false);
-                  }}
-                >
-                  {item.name}
-                </a>
-              </li>
-            ))}
+      {/* Mobile Menu */}
+      {isMobileMenuOpen && (
+        <nav className="md:hidden bg-white py-4 shadow-lg absolute w-full top-full right-0 text-right">
+          <ul className="flex flex-col space-y-4 px-4">
+            <li><Link to="/" className="block text-gray-700 hover:text-blue-600" onClick={() => setIsMobileMenuOpen(false)}>الرئيسية</Link></li>
+            <li><Link to="/#services" className="block text-gray-700 hover:text-blue-600" onClick={() => setIsMobileMenuOpen(false)}>خدماتنا</Link></li>
+            <li><Link to="/#doctors" className="block text-gray-700 hover:text-blue-600" onClick={() => setIsMobileMenuOpen(false)}>أطباؤنا</Link></li>
+            <li><Link to="/#tips" className="block text-gray-700 hover:text-blue-600" onClick={() => setIsMobileMenuOpen(false)}>نصائح صحية</Link></li>
+            <li><Link to="/#about" className="block text-gray-700 hover:text-blue-600" onClick={() => setIsMobileMenuOpen(false)}>عن المستشفى</Link></li>
+            <li><Link to="/#departments" className="block text-gray-700 hover:text-blue-600" onClick={() => setIsMobileMenuOpen(false)}>الأقسام</Link></li>
+            <li><Link to="/#contact" className="block text-gray-700 hover:text-blue-600" onClick={() => setIsMobileMenuOpen(false)}>اتصل بنا</Link></li>
+            
+            {isLoggedIn ? (
+              <>
+                <li>
+                  <Link to={getDashboardLink()} className="block text-blue-600 font-semibold hover:text-blue-800" onClick={() => setIsMobileMenuOpen(false)}>
+                    لوحة التحكم ({userName})
+                  </Link>
+                </li>
+                <li>
+                  <button onClick={() => { handleLogout(); setIsMobileMenuOpen(false); }} className="block text-red-600 font-semibold hover:text-red-800 w-full text-right">
+                    خروج
+                  </button>
+                </li>
+              </>
+            ) : (
+              <>
+                <li><Link to="/login" className="block text-blue-600 font-semibold hover:text-blue-800" onClick={() => setIsMobileMenuOpen(false)}>تسجيل الدخول</Link></li>
+                <li><Link to="/register" className="block bg-blue-600 text-white px-4 py-2 rounded-full text-center hover:bg-blue-700" onClick={() => setIsMobileMenuOpen(false)}>تسجيل جديد</Link></li>
+              </>
+            )}
           </ul>
         </nav>
-
-        {/* Mobile Navigation (Conditional Rendering) */}
-        {isMobileMenuOpen && (
-          <nav className="md:hidden w-full mt-4 flex flex-col items-center space-y-4 text-lg font-medium text-gray-700 order-5">
-            {navItems.map((item) => (
-              <a
-                key={item.name}
-                href={item.href}
-                onClick={() => {
-                  if (window.location.pathname !== '/') {
-                    navigate('/');
-                    setTimeout(() => {
-                      document.querySelector(item.href)?.scrollIntoView({ behavior: 'smooth' });
-                    }, 100);
-                  } else {
-                    document.querySelector(item.href)?.scrollIntoView({ behavior: 'smooth' });
-                  }
-                  setIsMobileMenuOpen(false);
-                }}
-                className="w-full text-center py-2 hover:bg-gray-100 rounded-md transition-colors duration-200 focus:outline-none"
-              >
-                {item.name}
-              </a>
-            ))}
-            {/* Login/Register/Logout Buttons for Mobile */}
-            {!currentUser ? ( // شرط لإظهار أزرار تسجيل الدخول/التسجيل إذا لم يكن المستخدم مسجلاً دخوله
-              <div className="w-full flex flex-col space-y-2 mt-4">
-                <Link
-                  to="/register"
-                  onClick={() => setIsMobileMenuOpen(false)}
-                  className="bg-blue-600 text-white px-4 py-2 rounded-full hover:bg-blue-700 transition-colors duration-200 flex items-center justify-center"
-                >
-                  <UserPlus size={18} className="ml-1" />
-                  تسجيل مريض جديد
-                </Link>
-                <Link
-                  to="/login"
-                  onClick={() => setIsMobileMenuOpen(false)}
-                  className="bg-blue-800 text-white px-4 py-2 rounded-full hover:bg-blue-900 transition-colors duration-200 flex items-center justify-center"
-                >
-                  <LogIn size={18} className="ml-1" />
-                  تسجيل الدخول
-                </Link>
-              </div>
-            ) : ( // إظهار زر تسجيل الخروج إذا كان المستخدم مسجلاً دخوله
-              <div className="w-full flex flex-col space-y-2 mt-4">
-                <button
-                  onClick={handleLogout}
-                  className="bg-red-600 text-white px-4 py-2 rounded-full hover:bg-red-700 transition-colors duration-200 flex items-center justify-center"
-                >
-                  <LogOut size={18} className="ml-1" />
-                  تسجيل الخروج
-                </button>
-              </div>
-            )}
-          </nav>
-        )}
-      </div>
+      )}
     </header>
   );
-}
+};
+
+export default Header;

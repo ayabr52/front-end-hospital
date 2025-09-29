@@ -2,23 +2,26 @@
 import React, { useState } from 'react';
 import { Eye, EyeOff } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
-import { registerPatient } from '../services/AuthService'; // استيراد خدمة المصادقة
+import { register } from '../services/AuthService'; // استيراد خدمة التسجيل الحقيقية
 
 const RegisterPage = () => {
   const [passwordVisible, setPasswordVisible] = useState(false);
   const [confirmPasswordVisible, setConfirmPasswordVisible] = useState(false);
+  // فصل firstName و lastName كحالات منفصلة لسهولة الإدارة
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
+  
   const [formData, setFormData] = useState({
-    firstName: '',
-    lastName: '',
     email: '',
     phone: '',
-    nationalId: '',
+    national_id: '',
     address: '',
     dob: '',
     gender: '',
     password: '',
-    confirmPassword: ''
+    password_confirmation: ''
   });
+  const [error, setError] = useState('');
   const navigate = useNavigate();
 
   const togglePasswordVisibility = () => setPasswordVisible(!passwordVisible);
@@ -28,18 +31,55 @@ const RegisterPage = () => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (formData.password !== formData.confirmPassword) {
-      alert('كلمة المرور وتأكيد كلمة المرور غير متطابقين!');
+    setError('');
+
+    if (formData.password !== formData.password_confirmation) {
+      setError('كلمة المرور وتأكيد كلمة المرور غير متطابقين!');
       return;
     }
-    const newUser = registerPatient(formData); // محاولة تسجيل المريض
-    if (newUser) {
-      alert(`مرحباً ${newUser.name}! تم تسجيل حسابك بنجاح كمريض.`);
-      navigate('/dashboard/patient'); // توجيه المريض الجديد إلى لوحة تحكم المريض
-    } else {
-      alert('فشل التسجيل. يرجى المحاولة مرة أخرى.');
+
+    // بناء حقل 'name' الكامل قبل الإرسال
+    const fullName = `${firstName} ${lastName}`.trim();
+    if (!fullName) {
+      setError('الاسم الكامل مطلوب.');
+      return;
+    }
+
+    try {
+      const response = await register({
+        name: fullName, // إرسال الاسم الكامل هنا
+        email: formData.email,
+        phone: formData.phone,
+        national_id: formData.national_id,
+        address: formData.address,
+        dob: formData.dob,
+        gender: formData.gender,
+        password: formData.password,
+        password_confirmation: formData.password_confirmation,
+        role_id: 4 // تعيين role_id = 4 للمريض
+      });
+
+      if (response && response.message) {
+        alert(`تم تسجيل حسابك بنجاح! يرجى تسجيل الدخول.`);
+        navigate('/login');
+      } else {
+        setError('فشل التسجيل. استجابة غير متوقعة من الخادم.');
+      }
+    } catch (err) {
+      const errorMessages = err.response?.data?.errors;
+      if (errorMessages) {
+        console.error('Validation Errors from API:', errorMessages);
+        let formattedErrors = '';
+        for (const key in errorMessages) {
+          formattedErrors += `${errorMessages[key].join(', ')}\n`;
+        }
+        setError(formattedErrors);
+      } else {
+        setError(err.response?.data?.message || 'فشل التسجيل. يرجى المحاولة مرة أخرى.');
+      }
+      console.error('Registration failed:', err);
     }
   };
 
@@ -64,8 +104,8 @@ const RegisterPage = () => {
                 required
                 className="shadow appearance-none border rounded-lg w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:shadow-outline focus:border-blue-500 text-right"
                 placeholder="ادخل اسمك الأول"
-                value={formData.firstName}
-                onChange={handleChange}
+                value={firstName}
+                onChange={(e) => setFirstName(e.target.value)} // تحديث حالة الاسم الأول مباشرة
               />
             </div>
             <div>
@@ -79,8 +119,8 @@ const RegisterPage = () => {
                 required
                 className="shadow appearance-none border rounded-lg w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:shadow-outline focus:border-blue-500 text-right"
                 placeholder="ادخل اسمك الأخير"
-                value={formData.lastName}
-                onChange={handleChange}
+                value={lastName}
+                onChange={(e) => setLastName(e.target.value)} // تحديث حالة الاسم الأخير مباشرة
               />
             </div>
           </div>
@@ -122,17 +162,17 @@ const RegisterPage = () => {
           {/* National ID & Address */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
-              <label htmlFor="nationalId" className="block text-gray-700 text-sm font-bold mb-2">
+              <label htmlFor="national_id" className="block text-gray-700 text-sm font-bold mb-2">
                 الرقم الوطني <span className="text-red-500">*</span>
               </label>
               <input
                 type="text"
-                id="nationalId"
-                name="nationalId"
+                id="national_id"
+                name="national_id"
                 required
                 className="shadow appearance-none border rounded-lg w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:shadow-outline focus:border-blue-500 text-right"
                 placeholder="ادخل رقمك الوطني"
-                value={formData.nationalId}
+                value={formData.national_id}
                 onChange={handleChange}
               />
             </div>
@@ -149,9 +189,10 @@ const RegisterPage = () => {
                 onChange={handleChange}
               >
                 <option value="">اختر محافظتك</option>
-                <option value="homs_hawash">حمص حواش</option>
+                <option value="homs_hawash">حمص </option>
                 <option value="damascus">دمشق</option>
                 <option value="aleppo">حلب</option>
+
                 {/* Add more options as needed */}
               </select>
               <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center px-2 text-gray-700">
@@ -223,17 +264,17 @@ const RegisterPage = () => {
               </button>
             </div>
             <div className="relative">
-              <label htmlFor="confirmPassword" className="block text-gray-700 text-sm font-bold mb-2">
+              <label htmlFor="password_confirmation" className="block text-gray-700 text-sm font-bold mb-2">
                 تأكيد كلمة المرور <span className="text-red-500">*</span>
               </label>
               <input
                 type={confirmPasswordVisible ? 'text' : 'password'}
-                id="confirmPassword"
-                name="confirmPassword"
+                id="password_confirmation"
+                name="password_confirmation"
                 required
                 className="shadow appearance-none border rounded-lg w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:shadow-outline focus:border-blue-500 text-right pr-10"
                 placeholder="أعد كتابة كلمة المرور"
-                value={formData.confirmPassword}
+                value={formData.password_confirmation}
                 onChange={handleChange}
               />
               <button
@@ -245,6 +286,10 @@ const RegisterPage = () => {
               </button>
             </div>
           </div>
+
+          {error && (
+            <p className="text-red-500 text-sm text-center">{error}</p>
+          )}
 
           <div className="text-left">
             <Link

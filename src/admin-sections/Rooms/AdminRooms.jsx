@@ -1,19 +1,35 @@
 // src/admin-sections/Rooms/AdminRooms.jsx
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Plus } from 'lucide-react';
 import RoomsList from './RoomsList';
 import RoomForm from './RoomForm';
-
-const initialRooms = [
-  { id: 1, code: 'NT2', department_id: 'النسائية والتوليد', specialty_id: 'نسائية', floor_number: 2, bed_capacity: 5 },
-  { id: 2, code: 'ICU1', department_id: 'العناية المركزة', specialty_id: 'عام', floor_number: 1, bed_capacity: 2 },
-  { id: 3, code: 'PED3', department_id: 'الأطفال', specialty_id: 'أطفال', floor_number: 3, bed_capacity: 4 },
-];
+import { getRooms, addRoom, updateRoom, deleteRoom } from '../../services/RoomService'; // استيراد خدمات الغرف
 
 const AdminRooms = () => {
-  const [rooms, setRooms] = useState(initialRooms);
+  const [rooms, setRooms] = useState([]);
   const [viewMode, setViewMode] = useState('list'); // 'list', 'add', 'edit'
   const [selectedRoom, setSelectedRoom] = useState(null);
+  const [loading, setLoading] = useState(true); // حالة التحميل
+  const [error, setError] = useState(null); // حالة الأخطاء
+
+  // دالة لجلب الغرف من الـ API
+  const fetchRooms = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const data = await getRooms();
+      setRooms(data);
+    } catch (err) {
+      setError('فشل في جلب الغرف: ' + (err.response?.data?.message || err.message));
+      console.error('Failed to fetch rooms:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchRooms(); // جلب الغرف عند تحميل المكون
+  }, []);
 
   const handleAddRoom = () => {
     setSelectedRoom(null);
@@ -25,29 +41,81 @@ const AdminRooms = () => {
     setViewMode('edit');
   };
 
-  const handleDeleteRoom = (id) => {
+  const handleDeleteRoom = async (id) => {
     if (window.confirm('هل أنت متأكد أنك تريد حذف هذه الغرفة؟')) {
-      setRooms(rooms.filter(room => room.id !== id));
+      try {
+        await deleteRoom(id);
+        alert('تم حذف الغرفة بنجاح.');
+        fetchRooms(); // إعادة جلب الغرف بعد الحذف
+      } catch (err) {
+        alert('فشل في حذف الغرفة: ' + (err.response?.data?.message || err.message));
+        console.error('Failed to delete room:', err);
+      }
     }
   };
 
-  const handleSaveRoom = (roomData) => {
-    if (roomData.id && rooms.some(r => r.id === roomData.id)) {
-      // تعديل غرفة موجودة
-      setRooms(rooms.map(room =>
-        room.id === roomData.id ? roomData : room
-      ));
-    } else {
-      // إضافة غرفة جديدة
-      setRooms([...rooms, { ...roomData, id: Date.now() }]);
+  const handleSaveRoom = async (roomData) => {
+    setError(null);
+    try {
+      if (roomData.id && rooms.some(r => r.id === roomData.id)) {
+        // تعديل غرفة موجودة
+        await updateRoom(roomData.id, {
+          room_number: roomData.room_number,
+          type: roomData.type,
+          capacity: parseInt(roomData.capacity), // تأكد من تحويلها إلى رقم
+          status: roomData.status,
+          notes: roomData.notes,
+          department_id: roomData.department_id // يجب أن يكون معرف القسم
+        });
+        alert('تم تحديث الغرفة بنجاح.');
+      } else {
+        // إضافة غرفة جديدة
+        await addRoom({
+          room_number: roomData.room_number,
+          type: roomData.type,
+          capacity: parseInt(roomData.capacity), // تأكد من تحويلها إلى رقم
+          status: roomData.status,
+          notes: roomData.notes,
+          department_id: roomData.department_id // يجب أن يكون معرف القسم
+        });
+        alert('تم إضافة الغرفة بنجاح.');
+      }
+      setViewMode('list'); // العودة إلى عرض القائمة
+      fetchRooms(); // إعادة جلب الغرف بعد الحفظ
+    } catch (err) {
+      const errorMessage = err.response?.data?.message || err.message;
+      const validationErrors = err.response?.data?.errors;
+      let fullErrorMessage = errorMessage;
+      if (validationErrors) {
+        fullErrorMessage += '\n' + Object.values(validationErrors).map(e => e.join(', ')).join('\n');
+      }
+      alert('فشل في حفظ الغرفة: ' + fullErrorMessage);
+      console.error('Failed to save room:', err);
     }
-    setViewMode('list');
   };
 
   const handleCancelForm = () => {
     setViewMode('list');
     setSelectedRoom(null);
+    setError(null); // مسح الأخطاء عند الإلغاء
   };
+
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center h-64">
+        <p className="text-blue-600 text-lg">جاري تحميل الغرف...</p>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
+        <strong className="font-bold">خطأ!</strong>
+        <span className="block sm:inline"> {error}</span>
+      </div>
+    );
+  }
 
   return (
     <div className="bg-white p-6 rounded-lg shadow-md">

@@ -1,9 +1,9 @@
 // src/dashboards/PatientDashboard.jsx
-import React, { useState } from 'react';
-import { getCurrentUser, logout } from '../services/AuthService';
+import React, { useState, useEffect } from 'react'; // إضافة useEffect
+import { getUserData, logout } from '../services/AuthService'; // تم التعديل لاستخدام getUserData
 import { useNavigate } from 'react-router-dom';
 import {
-  Calendar, Bed, FileText, LogOut, User as UserIcon, Bell, Settings // UserIcon renamed to avoid conflict
+  Calendar, Bed, FileText, LogOut, User as UserIcon, Bell, Settings
 } from 'lucide-react';
 
 // استيراد مكونات أقسام المريض
@@ -12,9 +12,20 @@ import PatientRoomBooking from '../patient-sections/Rooms/PatientRoomBooking';
 import PatientMedicalFile from '../patient-sections/MedicalFile/PatientMedicalFile';
 
 const PatientDashboard = () => {
-  const user = getCurrentUser();
+  const [user, setUser] = useState(null); // استخدام حالة لتخزين بيانات المستخدم
   const navigate = useNavigate();
   const [activeSection, setActiveSection] = useState('appointments'); // القسم النشط الافتراضي
+
+  useEffect(() => {
+    // جلب بيانات المستخدم عند تحميل المكون
+    const currentUserData = getUserData(); // استخدام getUserData
+    if (currentUserData) {
+      setUser(currentUserData);
+    } else {
+      // إذا لم يكن هناك مستخدم، أعد التوجيه إلى صفحة تسجيل الدخول
+      navigate('/login');
+    }
+  }, [navigate]);
 
   const handleLogout = () => {
     logout();
@@ -34,8 +45,17 @@ const PatientDashboard = () => {
     }
   };
 
+  if (!user) {
+    // يمكنك عرض شاشة تحميل أو لا شيء حتى يتم تحميل بيانات المستخدم
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-100">
+        <div className="text-blue-600 text-xl">جاري تحميل لوحة التحكم...</div>
+      </div>
+    );
+  }
+
   return (
-    <div className="flex min-h-screen bg-gray-100">
+    <div className="flex min-h-screen bg-gray-100 paddingTop">
       {/* Sidebar */}
       <aside className="w-64 bg-blue-800 text-white flex flex-col p-4 shadow-lg fixed h-full right-0"> {/* fixed right-0 for RTL sidebar */}
         <div className="text-center mb-8">
@@ -65,7 +85,7 @@ const PatientDashboard = () => {
                 مواعيدي
               </button>
             </li>
-            <li>
+            {/* <li>
               <button
                 onClick={() => setActiveSection('room-booking')}
                 className={`w-full text-right flex items-center p-3 rounded-lg hover:bg-blue-700 transition-colors duration-200 ${
@@ -75,7 +95,7 @@ const PatientDashboard = () => {
                 <Bed size={20} className="ml-3" />
                 حجز غرفة
               </button>
-            </li>
+            </li> */}
             <li>
               <button
                 onClick={() => setActiveSection('medical-file')}

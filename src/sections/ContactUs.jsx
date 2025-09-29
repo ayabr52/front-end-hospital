@@ -72,12 +72,7 @@ export default function ContactUs() {
 
         {/* Map Placeholder */}
         <div className="md:w-1/2">
-          {/*  */}
-          <img
-            src="https://placehold.co/600x400/CCCCCC/FFFFFF?text=Map+Placeholder"
-            alt="Map of Hospital Location"
-            className="w-full h-auto rounded-lg shadow-lg"
-          />
+          <iframe src="https://www.google.com/maps/embed?pb=!1m23!1m12!1m3!1d37086.38334473705!2d36.36229371893054!3d34.75548843029116!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!4m8!3e6!4m0!4m5!1s0x1523b7230259da95%3A0x3bd1f10d634e969f!2zUThKSis1OTXYjCDYp9mE2YXYstmK2YbYqdiMINiz2YjYsdmK2Kc!3m2!1d34.780394699999995!2d36.3309717!5e0!3m2!1sar!2snl!4v1753955071075!5m2!1sar!2snl" width="600" height="450"  allowFullScreen="" loading="lazy" referrerPolicy="no-referrer-when-downgrade"></iframe>
         </div>
       </div>
     </section>

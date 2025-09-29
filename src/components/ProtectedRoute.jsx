@@ -1,3 +1,4 @@
+// src/components/ProtectedRoute.jsx
 import React from 'react';
 import { Navigate } from 'react-router-dom';
 import { isAuthenticated, isAuthorized } from '../services/AuthService'; // استيراد وظائف المصادقة
@@ -8,9 +9,9 @@ const ProtectedRoute = ({ children, requiredRoles }) => {
     return <Navigate to="/login" replace />;
   }
 
+  // استخدام isAuthorized للتحقق من الدور
   if (!isAuthorized(requiredRoles)) {
     // إذا كان المستخدم مسجلاً الدخول ولكن ليس لديه الدور المطلوب، أعد توجيهه إلى الصفحة الرئيسية
-    // يمكنك أيضاً توجيهه إلى صفحة "غير مصرح لك"
     alert('ليس لديك الصلاحيات الكافية للوصول إلى هذه الصفحة.');
     return <Navigate to="/" replace />;
   }

@@ -1,10 +1,11 @@
 // src/dashboards/AdminDashboard.jsx
-import React, { useState } from 'react';
-import { getCurrentUser, logout } from '../services/AuthService';
+import React, { useState, useEffect } from 'react'; // إضافة useEffect
+import { getUserData, logout } from '../services/AuthService'; // تم التعديل لاستخدام getUserData
 import { useNavigate } from 'react-router-dom';
 import {
   LayoutDashboard, Building, Stethoscope, Bed, Users, User, Pill, DollarSign, LogOut,
-  Home as HomeIcon, Bell, Settings
+  Home as HomeIcon, Bell, Settings,
+  Package
 } from 'lucide-react';
 
 // استيراد جميع مكونات الأقسام
@@ -16,12 +17,24 @@ import AdminPatients from '../admin-sections/Patients/AdminPatients';
 import AdminNurses from '../admin-sections/Nurses/AdminNurses';
 import AdminPharmacy from '../admin-sections/Pharmacy/AdminPharmacy';
 import AdminAccounts from '../admin-sections/Accounts/AdminAccounts';
+import AdminInventory from '../admin-sections/AdminInventory/AdminInventory';
 
 
 const AdminDashboard = () => {
-  const user = getCurrentUser();
+  const [user, setUser] = useState(null); // استخدام حالة لتخزين بيانات المستخدم
   const navigate = useNavigate();
   const [activeSection, setActiveSection] = useState('overview'); // الحالة لتحديد القسم النشط
+
+  useEffect(() => {
+    // جلب بيانات المستخدم عند تحميل المكون
+    const currentUserData = getUserData();
+    if (currentUserData) {
+      setUser(currentUserData);
+    } else {
+      // إذا لم يكن هناك مستخدم، أعد التوجيه إلى صفحة تسجيل الدخول
+      navigate('/login');
+    }
+  }, [navigate]);
 
   const handleLogout = () => {
     logout();
@@ -46,13 +59,24 @@ const AdminDashboard = () => {
         return <AdminPharmacy />;
       case 'accounts':
         return <AdminAccounts />;
+      case 'inventory':
+        return <AdminInventory />;
       default:
         return <OverviewContent />;
     }
   };
 
+  if (!user) {
+    // يمكنك عرض شاشة تحميل أو لا شيء حتى يتم تحميل بيانات المستخدم
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-100">
+        <div className="text-blue-600 text-xl">جاري تحميل لوحة التحكم...</div>
+      </div>
+    );
+  }
+
   return (
-    <div className="flex min-h-screen bg-gray-100">
+<div className="flex min-h-screen bg-gray-100 paddingTop" >
       {/* Sidebar */}
       <aside className="w-64 bg-blue-800 text-white flex flex-col p-4 shadow-lg fixed h-full right-0"> {/* fixed right-0 for RTL sidebar */}
         <div className="text-center mb-8">
@@ -141,15 +165,16 @@ const AdminDashboard = () => {
             </li>
             <li>
               <button
-                onClick={() => setActiveSection('accounts')}
+                onClick={() => setActiveSection('inventory')}
                 className={`w-full text-right flex items-center p-3 rounded-lg hover:bg-blue-700 transition-colors duration-200 ${
-                  activeSection === 'accounts' ? 'bg-blue-700' : ''
+                  activeSection === 'inventory' ? 'bg-blue-700' : ''
                 }`}
               >
-                <DollarSign size={20} className="ml-3" />
-                رموز التوثيق
+                <Package size={20} className="ml-3" />
+                المستودع
               </button>
             </li>
+ 
           </ul>
         </nav>
 
@@ -178,6 +203,7 @@ const AdminDashboard = () => {
             {activeSection === 'nurses' && 'الممرضين'}
             {activeSection === 'pharmacy' && 'الصيدلية'}
             {activeSection === 'accounts' && 'رموز التوثيق'}
+            {activeSection === 'inventory' && 'المستودع'}
           </h2>
           <div className="flex items-center space-x-4 space-x-reverse">
             <span className="text-gray-700 font-medium">{user ? user.name : 'المستخدم'}</span>

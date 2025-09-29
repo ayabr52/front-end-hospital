@@ -11,10 +11,12 @@ export default function About() {
         <div className="md:w-1/2">
           {/*  */}
           <img
-            src="https://placehold.co/600x400/0000FF/FFFFFF?text=Hospital+Building"
+            src="https://farzathpu.com/wp-content/uploads/2025/03/photo_2025-03-23_16-45-29.jpg"
             alt="Hospital Building"
             className="w-full h-auto rounded-lg shadow-lg"
+            style={{height:'70%'}}
           />
+          
         </div>
         <div className="md:w-1/2 text-right">
           <p className="text-lg text-gray-700 leading-relaxed">

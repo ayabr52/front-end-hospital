@@ -2,33 +2,37 @@
 import React, { useState, useEffect } from 'react';
 
 const DepartmentForm = ({ departmentToEdit, onSave, onCancel }) => {
-  const [name, setName] = useState('');
-  const [description, setDescription] = useState('');
-  const [specialty, setSpecialty] = useState(''); // يمكن استبدالها بقائمة منسدلة حقيقية
+  const [formData, setFormData] = useState({
+    name: '',
+    description: '',
+    specialty: '',
+  });
 
   useEffect(() => {
     if (departmentToEdit) {
-      setName(departmentToEdit.name);
-      setDescription(departmentToEdit.description);
-      setSpecialty(departmentToEdit.specialty);
+      setFormData({
+        name: departmentToEdit.name,
+        description: departmentToEdit.description,
+        specialty: departmentToEdit.specialty,
+        id: departmentToEdit.id, // احتفظ بالمعرف للتعديل
+      });
     } else {
       // مسح النموذج عند إضافة جديد
-      setName('');
-      setDescription('');
-      setSpecialty('');
+      setFormData({
+        name: '',
+        description: '',
+        specialty: '',
+      });
     }
   }, [departmentToEdit]);
 
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
-    const departmentData = {
-      id: departmentToEdit ? departmentToEdit.id : Date.now(), // معرف فريد مؤقت
-      name,
-      description,
-      specialty,
-      createdAt: departmentToEdit ? departmentToEdit.createdAt : new Date().toISOString().split('T')[0],
-    };
-    onSave(departmentData);
+    onSave(formData);
   };
 
   return (
@@ -44,8 +48,9 @@ const DepartmentForm = ({ departmentToEdit, onSave, onCancel }) => {
           <input
             type="text"
             id="name"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
+            name="name" // إضافة اسم للحقل
+            value={formData.name}
+            onChange={handleChange}
             className="shadow appearance-none border rounded-lg w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:shadow-outline focus:border-blue-500 text-right"
             required
           />
@@ -56,8 +61,9 @@ const DepartmentForm = ({ departmentToEdit, onSave, onCancel }) => {
           </label>
           <textarea
             id="description"
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
+            name="description" // إضافة اسم للحقل
+            value={formData.description}
+            onChange={handleChange}
             className="shadow appearance-none border rounded-lg w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:shadow-outline focus:border-blue-500 text-right h-24 resize-none"
             required
           ></textarea>
@@ -69,8 +75,9 @@ const DepartmentForm = ({ departmentToEdit, onSave, onCancel }) => {
           <input
             type="text"
             id="specialty"
-            value={specialty}
-            onChange={(e) => setSpecialty(e.target.value)}
+            name="specialty" // إضافة اسم للحقل
+            value={formData.specialty}
+            onChange={handleChange}
             className="shadow appearance-none border rounded-lg w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:shadow-outline focus:border-blue-500 text-right"
             required
           />
