@@ -117,11 +117,6 @@ const NurseDashboard = () => {
               alt="User Avatar"
               className="w-10 h-10 rounded-full border-2 border-blue-500"
             />
-            {/* أيقونة الجرس للإشعارات */}
-            <div className="relative">
-              <Bell size={24} className="text-gray-600" />
-              <span className="absolute top-0 right-0 block h-2 w-2 rounded-full ring-2 ring-white bg-red-500"></span>
-            </div>
             {/* أيقونة الإعدادات */}
             <Settings size={24} className="text-gray-600" />
           </div>
