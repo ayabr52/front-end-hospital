@@ -276,7 +276,7 @@ const DoctorMedicalTests = () => {
                                     <td className="py-3 px-6 text-right">{record.diagnosis}</td>
                                     <td className="py-3 px-6 text-right">{record.treatment}</td>
                                     <td className="py-3 px-6 text-center whitespace-nowrap">
-                                        <div className="flex item-center justify-center space-x-2 space-x-reverse">
+                                        <div className="flex item-center justify-center gap-4">
                                             <button
                                                 onClick={() => handleEditRecord(record)}
                                                 className="w-8 h-8 flex items-center justify-center rounded-full bg-blue-500 text-white hover:bg-blue-600 transition-colors duration-200"

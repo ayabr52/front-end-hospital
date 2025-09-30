@@ -76,7 +76,7 @@ const Header = () => {
         </Link>
 
         {/* Desktop Navigation */}
-        <nav className="hidden md:flex items-center space-x-8 space-x-reverse">
+        <nav className="hidden md:flex items-center gap-6">
           <Link to="/" className="text-gray-700 hover:text-blue-600 transition-colors duration-200">الرئيسية</Link>
           <Link to="/#services" className="text-gray-700 hover:text-blue-600 transition-colors duration-200">خدماتنا</Link>
           <Link to="/#doctors" className="text-gray-700 hover:text-blue-600 transition-colors duration-200">أطباؤنا</Link>

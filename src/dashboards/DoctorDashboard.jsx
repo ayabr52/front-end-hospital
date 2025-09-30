@@ -39,7 +39,7 @@ const DoctorDashboard = () => {
   return (
     <div className="flex min-h-screen bg-gray-100 paddingTop" >
       {/* Sidebar */}
-      <aside className="w-64 bg-blue-800 text-white flex flex-col p-4 shadow-lg fixed h-full right-0">
+      <aside className="w-64 bg-blue-800 text-white flex flex-col p-4 shadow-lg fixed h-[94%] right-0 top-16">
         <div className="text-center mb-8">
           <h1 className="text-2xl font-bold">مستشفى الدكتور</h1>
           <h2 className="text-xl">فرزات أيوب الجامعي</h2>
@@ -114,7 +114,7 @@ const DoctorDashboard = () => {
             {/* عنوان القسم الجديد */}
             {activeSection === 'brain-chat' && 'شات Gemini للتشخيص'}
           </h2>
-          <div className="flex items-center space-x-4 space-x-reverse">
+          <div className="flex items-center gap-4">
             <span className="text-gray-700 font-medium">{user ? user.name : 'الطبيب'}</span>
             <img
               src="https://placehold.co/40x40/E0E7FF/0000FF?text=User"

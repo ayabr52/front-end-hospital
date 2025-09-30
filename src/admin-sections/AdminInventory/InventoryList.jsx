@@ -23,7 +23,7 @@ const InventoryList = ({ items, onEdit, onDelete }) => {
               <td className="py-3 px-6 text-right">{item.quantity}</td>
               <td className="py-3 px-6 text-right">{item.notes}</td>
               <td className="py-3 px-6 text-center">
-                <div className="flex item-center justify-center space-x-2 space-x-reverse">
+                <div className="flex item-center justify-center gap-4">
                   <button
                     className="w-8 h-8 flex items-center justify-center rounded-full text-blue-500 hover:bg-blue-100 transition-colors"
                     onClick={() => onEdit(item)}

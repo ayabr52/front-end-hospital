@@ -49,22 +49,24 @@ export default function Departments() {
                 {departments.length === 0 ? (
                     <p className="col-span-full text-center text-gray-600 text-lg">لا توجد أقسام لعرضها حالياً.</p>
                 ) : (
-                    departments.map((dept) => (
-                        <div
-                            key={dept.id} // استخدام id الخاص بالقسم من الـ API
-                            className="bg-white rounded-lg shadow-lg overflow-hidden transform hover:scale-105 transition-transform duration-300"
-                        >
+                    departments.map((dept) =>{                        
+                        return  <div
+                        key={dept.id} // استخدام id الخاص بالقسم من الـ API
+                        className="bg-blue-800 rounded-lg shadow-lg overflow-hidden transform hover:scale-105 transition-transform duration-300 flex flex-col items-center p-4"
+                    >
+                        <div className="wrapper-icon h-20 w-20 rounded-full overflow-hidden">
                             <img
                                 src={dept.image || `https://placehold.co/400x250/0000FF/FFFFFF?text=${dept.name}`} // استخدام صورة القسم من الـ API أو صورة بديلة
                                 alt={dept.name}
-                                className="w-full h-48 object-cover object-center"
+                                className="object-cover w-full h-full object-center"
                                 onError={(e) => { e.target.onerror = null; e.target.src = `https://placehold.co/400x250/0000FF/FFFFFF?text=${dept.name}`; }} //fallback image
                             />
-                            <div className="bg-blue-800 text-white p-4 text-center">
-                                <h3 className="text-xl font-semibold">{dept.name}</h3>
-                            </div>
                         </div>
-                    ))
+                        <div className=" text-white p-4 text-center">
+                            <h3 className="text-xl font-semibold">{dept.name}</h3>
+                        </div>
+                    </div>
+                    })
                 )}
             </div>
         </section>

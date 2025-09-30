@@ -180,23 +180,25 @@ const RegisterPage = () => {
               <label htmlFor="address" className="block text-gray-700 text-sm font-bold mb-2">
                 العنوان <span className="text-red-500">*</span>
               </label>
-              <select
-                id="address"
-                name="address"
-                required
-                className="shadow border rounded-lg w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:shadow-outline focus:border-blue-500 text-right appearance-none bg-white pr-8"
-                value={formData.address}
-                onChange={handleChange}
-              >
-                <option value="">اختر محافظتك</option>
-                <option value="homs_hawash">حمص </option>
-                <option value="damascus">دمشق</option>
-                <option value="aleppo">حلب</option>
+              <div className="wrapper-input relative">
+                <select
+                  id="address"
+                  name="address"
+                  required
+                  className="shadow border rounded-lg w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:shadow-outline focus:border-blue-500 text-right appearance-none bg-white pr-8"
+                  value={formData.address}
+                  onChange={handleChange}
+                >
+                  <option value="">اختر محافظتك</option>
+                  <option value="homs_hawash">حمص </option>
+                  <option value="damascus">دمشق</option>
+                  <option value="aleppo">حلب</option>
 
-                {/* Add more options as needed */}
-              </select>
-              <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center px-2 text-gray-700">
-                <svg className="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/></svg>
+                  {/* Add more options as needed */}
+                </select>
+                <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center px-2 text-gray-700">
+                  <svg className="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/></svg>
+                </div>
               </div>
             </div>
           </div>
@@ -221,20 +223,22 @@ const RegisterPage = () => {
               <label htmlFor="gender" className="block text-gray-700 text-sm font-bold mb-2">
                 الجنس <span className="text-red-500">*</span>
               </label>
-              <select
-                id="gender"
-                name="gender"
-                required
-                className="shadow border rounded-lg w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:shadow-outline focus:border-blue-500 text-right appearance-none bg-white pr-8"
-                value={formData.gender}
-                onChange={handleChange}
-              >
-                <option value="">اختر جنسك</option>
-                <option value="male">ذكر</option>
-                <option value="female">أنثى</option>
-              </select>
-              <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center px-2 text-gray-700">
-                <svg className="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/></svg>
+              <div className="wrapper-input relative">
+                <select
+                  id="gender"
+                  name="gender"
+                  required
+                  className="shadow border rounded-lg w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:shadow-outline focus:border-blue-500 text-right appearance-none bg-white pr-8"
+                  value={formData.gender}
+                  onChange={handleChange}
+                >
+                  <option value="">اختر جنسك</option>
+                  <option value="male">ذكر</option>
+                  <option value="female">أنثى</option>
+                </select>
+                <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center px-2 text-gray-700">
+                  <svg className="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/></svg>
+                </div>
               </div>
             </div>
           </div>
@@ -245,48 +249,64 @@ const RegisterPage = () => {
               <label htmlFor="password" className="block text-gray-700 text-sm font-bold mb-2">
                 كلمة المرور <span className="text-red-500">*</span>
               </label>
-              <input
-                type={passwordVisible ? 'text' : 'password'}
-                id="password"
-                name="password"
-                required
-                className="shadow appearance-none border rounded-lg w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:shadow-outline focus:border-blue-500 text-right pr-10"
-                placeholder="ادخل كلمة المرور"
-                value={formData.password}
-                onChange={handleChange}
-              />
-              <button
-                type="button"
-                onClick={togglePasswordVisibility}
-                className="absolute left-3 top-1/2 mt-3 text-gray-500 focus:outline-none"
-              >
-                {passwordVisible ? <EyeOff size={20} /> : <Eye size={20} />}
-              </button>
+              <div className="wrapper-input relative">
+                <input
+                  type={passwordVisible ? 'text' : 'password'}
+                  id="password"
+                  name="password"
+                  required
+                  className="shadow appearance-none border rounded-lg w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:shadow-outline focus:border-blue-500 text-right pr-10"
+                  placeholder="ادخل كلمة المرور"
+                  value={formData.password}
+                  onChange={handleChange}
+                />
+                <button
+                  type="button"
+                  onClick={togglePasswordVisibility}
+                  className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 focus:outline-none"
+                >
+                  {passwordVisible ? <EyeOff size={20} /> : <Eye size={20} />}
+                </button>
+              </div>
             </div>
             <div className="relative">
               <label htmlFor="password_confirmation" className="block text-gray-700 text-sm font-bold mb-2">
                 تأكيد كلمة المرور <span className="text-red-500">*</span>
               </label>
-              <input
-                type={confirmPasswordVisible ? 'text' : 'password'}
-                id="password_confirmation"
-                name="password_confirmation"
-                required
-                className="shadow appearance-none border rounded-lg w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:shadow-outline focus:border-blue-500 text-right pr-10"
-                placeholder="أعد كتابة كلمة المرور"
-                value={formData.password_confirmation}
-                onChange={handleChange}
-              />
-              <button
-                type="button"
-                onClick={toggleConfirmPasswordVisibility}
-                className="absolute left-3 top-1/2 mt-3 text-gray-500 focus:outline-none"
-              >
-                {confirmPasswordVisible ? <EyeOff size={20} /> : <Eye size={20} />}
-              </button>
+              <div className="wrapper-input relative">
+                <input
+                  type={confirmPasswordVisible ? 'text' : 'password'}
+                  id="password_confirmation"
+                  name="password_confirmation"
+                  required
+                  className="shadow appearance-none border rounded-lg w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:shadow-outline focus:border-blue-500 text-right pr-10"
+                  placeholder="أعد كتابة كلمة المرور"
+                  value={formData.password_confirmation}
+                  onChange={handleChange}
+                />
+                <button
+                  type="button"
+                  onClick={toggleConfirmPasswordVisibility}
+                  className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 focus:outline-none"
+                >
+                  {confirmPasswordVisible ? <EyeOff size={20} /> : <Eye size={20} />}
+                </button>
+              </div>
             </div>
           </div>
-
+          <div className='relative flex items-center gap-8'>
+            <label htmlFor="confirm_by" className="block text-gray-700 text-sm font-bold mb-2">
+                تحقق عن طريق <span className="text-red-500">*</span>
+            </label>  
+            <div className="wrapper-checkbox text-lg flex items-center gap-2">
+              <input type="radio" name="confirm_by" value={'sms'} id="sms_verify" />
+              <label htmlFor="sms_verify">SMS</label>
+            </div>
+            <div className="wrapper-checkbox text-lg flex items-center gap-2">
+              <input type="radio" name="confirm_by" value={'email'} id="email_verify" />
+              <label htmlFor="email_verify">Email</label>
+            </div>
+          </div>
           {error && (
             <p className="text-red-500 text-sm text-center">{error}</p>
           )}

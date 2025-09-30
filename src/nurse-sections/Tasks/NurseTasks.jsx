@@ -146,7 +146,7 @@ const NurseTasks = () => {
                     </span>
                   </td>
                   <td className="py-3 px-6 text-center whitespace-nowrap">
-                    <div className="flex item-center justify-center space-x-2 space-x-reverse">
+                    <div className="flex item-center justify-center gap-4">
                       <button
                         onClick={() => handleToggleStatus(task.id)}
                         className={`w-8 h-8 flex items-center justify-center rounded-full ${

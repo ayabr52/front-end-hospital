@@ -25,7 +25,7 @@ const RoomsList = ({ rooms, onEdit, onDelete }) => {
               <td className="py-3 px-6 text-right">{room.capacity}</td> {/* تم التعديل */}
               <td className="py-3 px-6 text-right">{room.status}</td> {/* عرض الحالة */}
               <td className="py-3 px-6 text-center whitespace-nowrap">
-                <div className="flex item-center justify-center space-x-2 space-x-reverse">
+                <div className="flex item-center justify-center gap-4">
                   <button
                     onClick={() => onEdit(room)}
                     className="w-8 h-8 flex items-center justify-center rounded-full bg-blue-500 text-white hover:bg-blue-600 transition-colors duration-200"

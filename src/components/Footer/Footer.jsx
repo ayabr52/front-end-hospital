@@ -18,7 +18,7 @@ export default function Footer() {
           </div>
 
           {/* ✅ القسم : خدماتنا */}
-          <div>
+          <div className='mx-auto'>
             <h4 className="text-lg font-semibold mb-4 border-b border-white pb-2 inline-block">خدماتنا</h4>
             <ul className="space-y-2 text-sm">
               <li>تحاليل مخبرية</li>
@@ -27,18 +27,18 @@ export default function Footer() {
           </div>
 
           {/* ✅ القسم : التواصل */}
-          <div>
+          <div className='mx-auto'>
             <h4 className="text-lg font-semibold mb-4 border-b border-white pb-2 inline-block">التواصل</h4>
             <ul className="space-y-3 text-sm">
-              <li className="flex items-center space-x-2 space-x-reverse">
+              <li className="flex items-center gap-2">
                 <Facebook size={18} className="text-white" />
                 <span>فيسبوك</span>
               </li>
-              <li className="flex items-center space-x-2 space-x-reverse">
+              <li className="flex items-center gap-2">
                 <MessageSquareText size={18} className="text-white" />
                 <span>واتساب</span>
               </li>
-              <li className="flex items-center space-x-2 space-x-reverse">
+              <li className="flex items-center gap-2">
                 <Phone size={18} className="text-white" />
                 <span dir="ltr">031-2081</span>
               </li>
@@ -47,7 +47,7 @@ export default function Footer() {
           </div>
 
           {/* ✅ الشعار واسم المشفى */}
-          <div className="flex flex-col items-end md:items-start space-y-4">
+          <div className="flex flex-col items-end md:items-start mx-auto">
             <img
               src="https://farzathpu.com/wp-content/uploads/2025/03/photo_2025-03-23_21-11-11-removebg-preview.png"
               alt="Logo"

@@ -154,15 +154,7 @@ const AdminDoctors = () => {
         );
     }
 
-    if (error) {
-        return (
-            <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
-                <strong className="font-bold">خطأ!</strong>
-                <span className="block sm:inline"> {error}</span>
-            </div>
-        );
-    }
-
+         
     return (
         <div className="bg-white p-6 rounded-lg shadow-md">
             <div className="flex justify-between items-center mb-6">
@@ -177,7 +169,6 @@ const AdminDoctors = () => {
                     </button>
                 )}
             </div>
-
             {viewMode === 'list' && (
                 <DoctorsList
                     doctors={doctors}
@@ -195,6 +186,12 @@ const AdminDoctors = () => {
                     errors={formErrors} // تمرير أخطاء التحقق من صحة النموذج
                 />
             )}
+            {error&&
+            <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
+                <strong className="font-bold">خطأ!</strong>
+                <span className="block sm:inline"> {error}</span>
+            </div>
+}
         </div>
     );
 };
