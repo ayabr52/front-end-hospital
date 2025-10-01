@@ -79,22 +79,21 @@ const AdminDashboard = () => {
   }
 
   return (
-<div className="flex min-h-screen bg-gray-100 paddingTop" >
+    <div className="flex min-h-screen bg-gray-100 paddingTop" >
       {/* Sidebar */}
-      <aside className="w-64 bg-blue-800 text-white flex flex-col p-4 shadow-lg fixed h-[94%] right-0 top-16 top-16"> {/* fixed right-0 for RTL sidebar */}
+      <aside className="w-64 bg-blue-800 text-white flex flex-col p-4 shadow-lg fixed h-[calc(100dvh-70px)] right-0 bottom-0"> {/* fixed right-0 for RTL sidebar */}
         <div className="text-center mb-8">
           <h1 className="text-2xl font-bold">مستشفى الدكتور</h1>
           <h2 className="text-xl">فرزات أيوب الجامعي</h2>
         </div>
 
-        <nav className="flex-grow">
+        <nav className="h-fit max-h-full overflow-y-auto">
           <ul className="space-y-2">
             <li>
               <button
                 onClick={() => setActiveSection('overview')}
-                className={`w-full text-right flex items-center p-3 rounded-lg hover:bg-blue-700 transition-colors duration-200 ${
-                  activeSection === 'overview' ? 'bg-blue-700' : ''
-                }`}
+                className={`w-full text-right flex items-center p-3 rounded-lg hover:bg-blue-700 transition-colors duration-200 ${activeSection === 'overview' ? 'bg-blue-700' : ''
+                  }`}
               >
                 <HomeIcon size={20} className="ml-3" /> {/* أيقونة الرئيسية */}
                 الرئيسية
@@ -103,9 +102,8 @@ const AdminDashboard = () => {
             <li>
               <button
                 onClick={() => setActiveSection('departments')}
-                className={`w-full text-right flex items-center p-3 rounded-lg hover:bg-blue-700 transition-colors duration-200 ${
-                  activeSection === 'departments' ? 'bg-blue-700' : ''
-                }`}
+                className={`w-full text-right flex items-center p-3 rounded-lg hover:bg-blue-700 transition-colors duration-200 ${activeSection === 'departments' ? 'bg-blue-700' : ''
+                  }`}
               >
                 <Building size={20} className="ml-3" />
                 الأقسام
@@ -114,9 +112,8 @@ const AdminDashboard = () => {
             <li>
               <button
                 onClick={() => setActiveSection('doctors')}
-                className={`w-full text-right flex items-center p-3 rounded-lg hover:bg-blue-700 transition-colors duration-200 ${
-                  activeSection === 'doctors' ? 'bg-blue-700' : ''
-                }`}
+                className={`w-full text-right flex items-center p-3 rounded-lg hover:bg-blue-700 transition-colors duration-200 ${activeSection === 'doctors' ? 'bg-blue-700' : ''
+                  }`}
               >
                 <Stethoscope size={20} className="ml-3" />
                 الأطباء
@@ -125,9 +122,8 @@ const AdminDashboard = () => {
             <li>
               <button
                 onClick={() => setActiveSection('rooms')}
-                className={`w-full text-right flex items-center p-3 rounded-lg hover:bg-blue-700 transition-colors duration-200 ${
-                  activeSection === 'rooms' ? 'bg-blue-700' : ''
-                }`}
+                className={`w-full text-right flex items-center p-3 rounded-lg hover:bg-blue-700 transition-colors duration-200 ${activeSection === 'rooms' ? 'bg-blue-700' : ''
+                  }`}
               >
                 <Bed size={20} className="ml-3" />
                 الغرف الداخلية
@@ -136,9 +132,8 @@ const AdminDashboard = () => {
             <li>
               <button
                 onClick={() => setActiveSection('patients')}
-                className={`w-full text-right flex items-center p-3 rounded-lg hover:bg-blue-700 transition-colors duration-200 ${
-                  activeSection === 'patients' ? 'bg-blue-700' : ''
-                }`}
+                className={`w-full text-right flex items-center p-3 rounded-lg hover:bg-blue-700 transition-colors duration-200 ${activeSection === 'patients' ? 'bg-blue-700' : ''
+                  }`}
               >
                 <Users size={20} className="ml-3" />
                 المرضى
@@ -147,9 +142,8 @@ const AdminDashboard = () => {
             <li>
               <button
                 onClick={() => setActiveSection('nurses')}
-                className={`w-full text-right flex items-center p-3 rounded-lg hover:bg-blue-700 transition-colors duration-200 ${
-                  activeSection === 'nurses' ? 'bg-blue-700' : ''
-                }`}
+                className={`w-full text-right flex items-center p-3 rounded-lg hover:bg-blue-700 transition-colors duration-200 ${activeSection === 'nurses' ? 'bg-blue-700' : ''
+                  }`}
               >
                 <User size={20} className="ml-3" />
                 الممرضين
@@ -158,9 +152,8 @@ const AdminDashboard = () => {
             <li>
               <button
                 onClick={() => setActiveSection('pharmacy')}
-                className={`w-full text-right flex items-center p-3 rounded-lg hover:bg-blue-700 transition-colors duration-200 ${
-                  activeSection === 'pharmacy' ? 'bg-blue-700' : ''
-                }`}
+                className={`w-full text-right flex items-center p-3 rounded-lg hover:bg-blue-700 transition-colors duration-200 ${activeSection === 'pharmacy' ? 'bg-blue-700' : ''
+                  }`}
               >
                 <Pill size={20} className="ml-3" />
                 الصيدلية
@@ -169,9 +162,8 @@ const AdminDashboard = () => {
             <li>
               <button
                 onClick={() => setActiveSection('inventory')}
-                className={`w-full text-right flex items-center p-3 rounded-lg hover:bg-blue-700 transition-colors duration-200 ${
-                  activeSection === 'inventory' ? 'bg-blue-700' : ''
-                }`}
+                className={`w-full text-right flex items-center p-3 rounded-lg hover:bg-blue-700 transition-colors duration-200 ${activeSection === 'inventory' ? 'bg-blue-700' : ''
+                  }`}
               >
                 <Package size={20} className="ml-3" />
                 المستودع
@@ -180,15 +172,14 @@ const AdminDashboard = () => {
             <li>
               <button
                 onClick={() => setActiveSection('tips')}
-                className={`w-full text-right flex items-center p-3 rounded-lg hover:bg-blue-700 transition-colors duration-200 ${
-                  activeSection === 'tips' ? 'bg-blue-700' : ''
-                }`}
+                className={`w-full text-right flex items-center p-3 rounded-lg hover:bg-blue-700 transition-colors duration-200 ${activeSection === 'tips' ? 'bg-blue-700' : ''
+                  }`}
               >
                 <TextQuote size={20} className="ml-3" />
                 النصائح
               </button>
             </li>
- 
+
           </ul>
         </nav>
 

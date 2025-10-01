@@ -1,6 +1,6 @@
 // src/dashboards/ReceptionistDashboard.jsx
 import React, { useState } from 'react';
-import { getUserData , logout } from '../services/AuthService';
+import { getUserData, logout } from '../services/AuthService';
 import { useNavigate } from 'react-router-dom';
 import {
   Calendar, Users, Bed, LogOut, User as UserIcon, Bell, Settings
@@ -12,7 +12,7 @@ import ReceptionistPatients from '../receptionist-sections/Patients/Receptionist
 import ReceptionistRooms from '../receptionist-sections/Rooms/ReceptionistRooms';
 
 const ReceptionistDashboard = () => {
-  const user = getUserData ();
+  const user = getUserData();
   const navigate = useNavigate();
   const [activeSection, setActiveSection] = useState('appointments'); // القسم النشط الافتراضي
 
@@ -37,7 +37,7 @@ const ReceptionistDashboard = () => {
   return (
     <div className="flex min-h-screen bg-gray-100 paddingTop">
       {/* Sidebar */}
-      <aside className="w-64 bg-blue-800 text-white flex flex-col p-4 shadow-lg fixed h-[94%] right-0 top-16"> {/* fixed right-0 for RTL sidebar */}
+      <aside className="w-64 bg-blue-800 text-white flex flex-col p-4 shadow-lg fixed h-[calc(100dvh-70px)] right-0 bottom-0"> {/* fixed right-0 for RTL sidebar */}
         <div className="text-center mb-8">
           <h1 className="text-2xl font-bold">مستشفى الدكتور</h1>
           <h2 className="text-xl">فرزات أيوب الجامعي</h2>
@@ -52,14 +52,13 @@ const ReceptionistDashboard = () => {
           </div>
         </div>
 
-        <nav className="flex-grow">
+        <nav className="h-fit max-h-full overflow-y-auto">
           <ul className="space-y-2">
             <li>
               <button
                 onClick={() => setActiveSection('appointments')}
-                className={`w-full text-right flex items-center p-3 rounded-lg hover:bg-blue-700 transition-colors duration-200 ${
-                  activeSection === 'appointments' ? 'bg-blue-700' : ''
-                }`}
+                className={`w-full text-right flex items-center p-3 rounded-lg hover:bg-blue-700 transition-colors duration-200 ${activeSection === 'appointments' ? 'bg-blue-700' : ''
+                  }`}
               >
                 <Calendar size={20} className="ml-3" />
                 المواعيد
@@ -68,9 +67,8 @@ const ReceptionistDashboard = () => {
             <li>
               <button
                 onClick={() => setActiveSection('patients')}
-                className={`w-full text-right flex items-center p-3 rounded-lg hover:bg-blue-700 transition-colors duration-200 ${
-                  activeSection === 'patients' ? 'bg-blue-700' : ''
-                }`}
+                className={`w-full text-right flex items-center p-3 rounded-lg hover:bg-blue-700 transition-colors duration-200 ${activeSection === 'patients' ? 'bg-blue-700' : ''
+                  }`}
               >
                 <Users size={20} className="ml-3" />
                 المرضى
@@ -79,9 +77,8 @@ const ReceptionistDashboard = () => {
             <li>
               <button
                 onClick={() => setActiveSection('rooms')}
-                className={`w-full text-right flex items-center p-3 rounded-lg hover:bg-blue-700 transition-colors duration-200 ${
-                  activeSection === 'rooms' ? 'bg-blue-700' : ''
-                }`}
+                className={`w-full text-right flex items-center p-3 rounded-lg hover:bg-blue-700 transition-colors duration-200 ${activeSection === 'rooms' ? 'bg-blue-700' : ''
+                  }`}
               >
                 <Bed size={20} className="ml-3" />
                 الغرف
@@ -117,11 +114,6 @@ const ReceptionistDashboard = () => {
               alt="User Avatar"
               className="w-10 h-10 rounded-full border-2 border-blue-500"
             />
-            {/* أيقونة الجرس للإشعارات */}
-            <div className="relative">
-              <Bell size={24} className="text-gray-600" />
-              <span className="absolute top-0 right-0 block h-2 w-2 rounded-full ring-2 ring-white bg-red-500"></span>
-            </div>
             {/* أيقونة الإعدادات */}
             <Settings size={24} className="text-gray-600" />
           </div>

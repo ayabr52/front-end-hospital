@@ -1,6 +1,6 @@
 // src/dashboards/PharmacistDashboard.jsx
 import React, { useState } from 'react';
-import { getUserData , logout } from '../services/AuthService';
+import { getUserData, logout } from '../services/AuthService';
 import { useNavigate } from 'react-router-dom';
 import {
   Pill, FileText, LogOut, User as UserIcon, Bell, Settings
@@ -11,7 +11,7 @@ import PharmacistMedicines from '../pharmacist-sections/Medicines/PharmacistMedi
 import PharmacistPrescriptions from '../pharmacist-sections/Prescriptions/PharmacistPrescriptions';
 
 const PharmacistDashboard = () => {
-  const user = getUserData ();
+  const user = getUserData();
   const navigate = useNavigate();
   const [activeSection, setActiveSection] = useState('medicines'); // القسم النشط الافتراضي
 
@@ -34,7 +34,7 @@ const PharmacistDashboard = () => {
   return (
     <div className="flex min-h-screen bg-gray-100 paddingTop">
       {/* Sidebar */}
-      <aside className="w-64 bg-blue-800 text-white flex flex-col p-4 shadow-lg fixed h-[94%] right-0 top-16"> {/* fixed right-0 for RTL sidebar */}
+      <aside className="w-64 bg-blue-800 text-white flex flex-col p-4 shadow-lg fixed h-[calc(100dvh-70px)] right-0 bottom-0"> {/* fixed right-0 for RTL sidebar */}
         <div className="text-center mb-8">
           <h1 className="text-2xl font-bold">مستشفى الدكتور</h1>
           <h2 className="text-xl">فرزات أيوب الجامعي</h2>
@@ -49,14 +49,13 @@ const PharmacistDashboard = () => {
           </div>
         </div>
 
-        <nav className="flex-grow">
+        <nav className="h-fit max-h-full overflow-y-auto">
           <ul className="space-y-2">
             <li>
               <button
                 onClick={() => setActiveSection('medicines')}
-                className={`w-full text-right flex items-center p-3 rounded-lg hover:bg-blue-700 transition-colors duration-200 ${
-                  activeSection === 'medicines' ? 'bg-blue-700' : ''
-                }`}
+                className={`w-full text-right flex items-center p-3 rounded-lg hover:bg-blue-700 transition-colors duration-200 ${activeSection === 'medicines' ? 'bg-blue-700' : ''
+                  }`}
               >
                 <Pill size={20} className="ml-3" />
                 إدارة الأدوية
@@ -65,9 +64,8 @@ const PharmacistDashboard = () => {
             <li>
               <button
                 onClick={() => setActiveSection('prescriptions')}
-                className={`w-full text-right flex items-center p-3 rounded-lg hover:bg-blue-700 transition-colors duration-200 ${
-                  activeSection === 'prescriptions' ? 'bg-blue-700' : ''
-                }`}
+                className={`w-full text-right flex items-center p-3 rounded-lg hover:bg-blue-700 transition-colors duration-200 ${activeSection === 'prescriptions' ? 'bg-blue-700' : ''
+                  }`}
               >
                 <FileText size={20} className="ml-3" />
                 الوصفات الطبية
@@ -102,11 +100,6 @@ const PharmacistDashboard = () => {
               alt="User Avatar"
               className="w-10 h-10 rounded-full border-2 border-blue-500"
             />
-            {/* أيقونة الجرس للإشعارات */}
-            <div className="relative">
-              <Bell size={24} className="text-gray-600" />
-              <span className="absolute top-0 right-0 block h-2 w-2 rounded-full ring-2 ring-white bg-red-500"></span>
-            </div>
             {/* أيقونة الإعدادات */}
             <Settings size={24} className="text-gray-600" />
           </div>

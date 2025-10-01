@@ -39,7 +39,7 @@ const DoctorDashboard = () => {
   return (
     <div className="flex min-h-screen bg-gray-100 paddingTop" >
       {/* Sidebar */}
-      <aside className="w-64 bg-blue-800 text-white flex flex-col p-4 shadow-lg fixed h-[94%] right-0 top-16">
+      <aside className="w-64 bg-blue-800 text-white flex flex-col p-4 shadow-lg fixed h-[calc(100dvh-70px)] right-0 bottom-0">
         <div className="text-center mb-8">
           <h1 className="text-2xl font-bold">مستشفى الدكتور</h1>
           <h2 className="text-xl">فرزات أيوب الجامعي</h2>
@@ -54,14 +54,13 @@ const DoctorDashboard = () => {
           </div>
         </div>
 
-        <nav className="flex-grow">
+        <nav className="h-fit max-h-full overflow-y-auto">
           <ul className="space-y-2">
             <li>
               <button
                 onClick={() => setActiveSection('appointments')}
-                className={`w-full text-right flex items-center p-3 rounded-lg hover:bg-blue-700 transition-colors duration-200 ${
-                  activeSection === 'appointments' ? 'bg-blue-700' : ''
-                }`}
+                className={`w-full text-right flex items-center p-3 rounded-lg hover:bg-blue-700 transition-colors duration-200 ${activeSection === 'appointments' ? 'bg-blue-700' : ''
+                  }`}
               >
                 <Calendar size={20} className="ml-3" />
                 المواعيد
@@ -70,9 +69,8 @@ const DoctorDashboard = () => {
             <li>
               <button
                 onClick={() => setActiveSection('medical-tests')}
-                className={`w-full text-right flex items-center p-3 rounded-lg hover:bg-blue-700 transition-colors duration-200 ${
-                  activeSection === 'medical-tests' ? 'bg-blue-700' : ''
-                }`}
+                className={`w-full text-right flex items-center p-3 rounded-lg hover:bg-blue-700 transition-colors duration-200 ${activeSection === 'medical-tests' ? 'bg-blue-700' : ''
+                  }`}
               >
                 <Stethoscope size={20} className="ml-3" />
                 الاختبارات الطبية
@@ -82,12 +80,11 @@ const DoctorDashboard = () => {
             <li>
               <button
                 onClick={() => setActiveSection('brain-chat')}
-                className={`w-full text-right flex items-center p-3 rounded-lg hover:bg-blue-700 transition-colors duration-200 ${
-                  activeSection === 'brain-chat' ? 'bg-blue-700' : ''
-                }`}
+                className={`w-full text-right flex items-center p-3 rounded-lg hover:bg-blue-700 transition-colors duration-200 ${activeSection === 'brain-chat' ? 'bg-blue-700' : ''
+                  }`}
               >
                 <MessageSquare size={20} className="ml-3" />
-                مساعد طبي ذكي 
+                مساعد طبي ذكي
               </button>
             </li>
           </ul>

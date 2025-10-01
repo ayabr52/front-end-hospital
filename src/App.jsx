@@ -22,6 +22,7 @@ import NurseDashboard from './dashboards/NurseDashboard.jsx';
 import AccountantDashboard from './dashboards/AccountantDashboard.jsx';
 import PharmacistDashboard from './dashboards/PharmacistDashboard.jsx';
 import React, { useEffect } from 'react';
+import 'react-loading-skeleton/dist/skeleton.css'
 
 function App() {
     // استخدام useLocation هنا صحيح لأنه سيتم عرض App داخل BrowserRouter في main.jsx
