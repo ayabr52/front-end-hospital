@@ -1,6 +1,10 @@
 // src/sections/Departments.jsx
 import React, { useState, useEffect } from 'react';
 import { getDepartments } from '../services/DepartmentService'; // استيراد خدمة الأقسام
+import { FaBriefcaseMedical, FaHeartbeat } from "react-icons/fa";
+import { MdPregnantWoman, MdLocalHospital } from "react-icons/md";
+import { LuBaby } from "react-icons/lu";
+import { GrEmergency } from "react-icons/gr";
 
 export default function Departments() {
     const [departments, setDepartments] = useState([]);
@@ -22,7 +26,14 @@ export default function Departments() {
 
         fetchDepartments();
     }, []);
-
+    const arrayIcons = [
+        <FaBriefcaseMedical className='text-white text-2xl w-full h-full object-contain' />,
+        <MdPregnantWoman className='text-white text-2xl w-full h-full object-contain' />,
+        <MdLocalHospital className='text-white text-2xl w-full h-full object-contain' />,
+        <FaHeartbeat className='text-white text-2xl w-full h-full object-contain' />,
+        <LuBaby className='text-white text-2xl w-full h-full object-contain' />,
+        <GrEmergency className='text-white text-2xl w-full h-full object-contain' />,
+    ]
     if (loading) {
         return (
             <section id="departments" className="container mx-auto p-4 md:p-8 my-12 text-center">
@@ -49,23 +60,20 @@ export default function Departments() {
                 {departments.length === 0 ? (
                     <p className="col-span-full text-center text-gray-600 text-lg">لا توجد أقسام لعرضها حالياً.</p>
                 ) : (
-                    departments.map((dept) =>{                        
-                        return  <div
-                        key={dept.id} // استخدام id الخاص بالقسم من الـ API
-                        className="bg-blue-800 rounded-lg shadow-lg overflow-hidden transform hover:scale-105 transition-transform duration-300 flex flex-col items-center p-4"
-                    >
-                        <div className="wrapper-icon h-20 w-20 rounded-full overflow-hidden">
-                            <img
-                                src={dept.image || `https://placehold.co/400x250/0000FF/FFFFFF?text=${dept.name}`} // استخدام صورة القسم من الـ API أو صورة بديلة
-                                alt={dept.name}
-                                className="object-cover w-full h-full object-center"
-                                onError={(e) => { e.target.onerror = null; e.target.src = `https://placehold.co/400x250/0000FF/FFFFFF?text=${dept.name}`; }} //fallback image
-                            />
+                    departments.map((dept, i) => {
+                        return <div
+                            key={dept.id} // استخدام id الخاص بالقسم من الـ API
+                            className="bg-blue-800 rounded-lg shadow-lg overflow-hidden transform hover:scale-105 transition-transform duration-300 flex flex-col items-center p-4"
+                        >
+                            <div className="wrapper-icon h-20 w-20">
+                                {
+                                    arrayIcons[i]
+                                }
+                            </div>
+                            <div className=" text-white p-4 text-center">
+                                <h3 className="text-xl font-semibold">{dept.name}</h3>
+                            </div>
                         </div>
-                        <div className=" text-white p-4 text-center">
-                            <h3 className="text-xl font-semibold">{dept.name}</h3>
-                        </div>
-                    </div>
                     })
                 )}
             </div>
