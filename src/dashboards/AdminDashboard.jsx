@@ -5,7 +5,8 @@ import { useNavigate } from 'react-router-dom';
 import {
   LayoutDashboard, Building, Stethoscope, Bed, Users, User, Pill, DollarSign, LogOut,
   Home as HomeIcon, Bell, Settings,
-  Package
+  Package,
+  TextQuote
 } from 'lucide-react';
 
 // استيراد جميع مكونات الأقسام
@@ -18,7 +19,7 @@ import AdminNurses from '../admin-sections/Nurses/AdminNurses';
 import AdminPharmacy from '../admin-sections/Pharmacy/AdminPharmacy';
 import AdminAccounts from '../admin-sections/Accounts/AdminAccounts';
 import AdminInventory from '../admin-sections/AdminInventory/AdminInventory';
-
+import AdminTips from '../admin-sections/Tips/AdminTips'
 
 const AdminDashboard = () => {
   const [user, setUser] = useState(null); // استخدام حالة لتخزين بيانات المستخدم
@@ -61,6 +62,8 @@ const AdminDashboard = () => {
         return <AdminAccounts />;
       case 'inventory':
         return <AdminInventory />;
+      case 'tips':
+        return <AdminTips />;
       default:
         return <OverviewContent />;
     }
@@ -172,6 +175,17 @@ const AdminDashboard = () => {
               >
                 <Package size={20} className="ml-3" />
                 المستودع
+              </button>
+            </li>
+            <li>
+              <button
+                onClick={() => setActiveSection('tips')}
+                className={`w-full text-right flex items-center p-3 rounded-lg hover:bg-blue-700 transition-colors duration-200 ${
+                  activeSection === 'tips' ? 'bg-blue-700' : ''
+                }`}
+              >
+                <TextQuote size={20} className="ml-3" />
+                النصائح
               </button>
             </li>
  
