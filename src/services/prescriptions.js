@@ -5,10 +5,10 @@ const API_URL = import.meta.env.VITE_API_BASE_URL; // عنوان الـ API ال
 
 export const getPrescriptionsApi = async () => {
     try {
-        const response=await axios.get(`${API_URL}/prescriptions`,{
-            headers:{
-                Authorization:`Bearer ${getToken()}`,
-                "Content-Type":'application/json'
+        const response = await axios.get(`${API_URL}/prescriptions`, {
+            headers: {
+                Authorization: `Bearer ${getToken()}`,
+                "Content-Type": 'application/json'
             }
         })
         return response.data
@@ -19,10 +19,10 @@ export const getPrescriptionsApi = async () => {
 }
 export const addPrescriptionsApi = async (data) => {
     try {
-        const response=await axios.post(`${API_URL}/prescriptions`,data,{
-            headers:{
-                Authorization:`Bearer ${getToken()}`,
-                "Content-Type":'application/json'
+        const response = await axios.post(`${API_URL}/prescriptions`, data, {
+            headers: {
+                Authorization: `Bearer ${getToken()}`,
+                "Content-Type": 'application/json'
             }
         })
         return response.data
