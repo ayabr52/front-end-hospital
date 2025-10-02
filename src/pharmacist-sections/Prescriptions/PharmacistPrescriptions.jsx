@@ -38,6 +38,8 @@ const PharmacistPrescriptions = () => {
     const handleGetNotification = async () => {
       const resPrescriptions = await getPrescriptions()
       if (resPrescriptions.status === 'success') {
+        console.log(resPrescriptions);
+
         setPrescriptions(resPrescriptions.prescriptions)
 
       }
@@ -131,6 +133,7 @@ const PharmacistPrescriptions = () => {
       } else {
         await addPrescriptionsApi(dataToSend); // 👈 تم التعديل لإرسال البيانات الجديدة
         const resPrescriptions = await getPrescriptions()
+
         if (resPrescriptions.status === 'success') {
           setPrescriptions(resPrescriptions.prescriptions)
         }
@@ -389,7 +392,7 @@ const PharmacistPrescriptions = () => {
             <tr className="bg-gray-100 text-gray-600 uppercase text-sm leading-normal">
               <th className="py-3 px-6 text-right">رقم الوصفة</th>
               <th className="py-3 px-6 text-right">اسم المريض</th>
-              {/* <th className="py-3 px-6 text-right">اسم الطبيب</th> */}
+              <th className="py-3 px-6 text-right">اسم الطبيب</th>
               <th className="py-3 px-6 text-right">التاريخ</th>
               <th className="py-3 px-6 text-right">الحالة</th>
               <th className="py-3 px-6 text-center">الإجراءات</th>
@@ -417,12 +420,16 @@ const PharmacistPrescriptions = () => {
                   </tr>
                 ) : (
                   prescriptions.map((p) => {
+                    console.log(p);
+                    
                     return <tr key={p.id} className="border-b border-gray-200 hover:bg-gray-50">
                       <td className="py-3 px-6 text-right whitespace-nowrap">{p.id}</td>
                       <td className="py-3 px-6 text-right">{p.patient && p.patient.name}</td>
-                      {/* <td className="py-3 px-6 text-right">
-                        {doctors.find((value) => value.id === p.doctor_id && value.name)}
-                      </td> */}
+                      <td className="py-3 px-6 text-right">
+                        {
+                          p.doctor.name
+                        }
+                      </td>
                       <td className="py-3 px-6 text-right">{p.prescription_date ? p.prescription_date.split('T')[0] : '-'}
 
                       </td>
