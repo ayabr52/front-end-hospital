@@ -2,14 +2,8 @@
 import React, { useState } from 'react';
 import { Plus, Edit, Trash2, Package } from 'lucide-react';
 
-const initialMedicines = [
-  { id: 1, name: 'باراسيتامول', quantity: 100, price: 5.50, expiry_date: '2025-12-31', description: 'مسكن للألم وخافض للحرارة.' },
-  { id: 2, name: 'أموكسيسيلين', quantity: 50, price: 12.00, expiry_date: '2024-11-01', description: 'مضاد حيوي واسع الطيف.' },
-  { id: 3, name: 'فيتامين سي', quantity: 200, price: 3.25, expiry_date: '2026-06-30', description: 'مكمل غذائي لتقوية المناعة.' },
-];
-
 const PharmacistMedicines = () => {
-  const [medicines, setMedicines] = useState(initialMedicines);
+  const [medicines, setMedicines] = useState([]);
   const [showForm, setShowForm] = useState(false);
   const [selectedMedicine, setSelectedMedicine] = useState(null);
   const [formData, setFormData] = useState({

@@ -1,10 +1,10 @@
 // src/pharmacist-sections/Prescriptions/PharmacistPrescriptions.jsx
 import React, { useEffect, useState } from 'react';
-import { CheckCircle, XCircle, Eye, Pill, Loader, Plus } from 'lucide-react';
+import { CheckCircle, XCircle, Eye, Pill, Loader, Plus, Info } from 'lucide-react';
 import { usePrescriptions } from '../../hooks/usePrescriptions';
 import Skeleton from 'react-loading-skeleton';
-import { addMedicalRecord, getDoctors, getPatients, updateMedicalRecord } from '../../services/api-service';
-
+import { getDoctors, getPatients, updateMedicalRecord } from '../../services/api-service';
+import { addPrescriptionsApi } from '../../services/prescriptions';
 
 const PharmacistPrescriptions = () => {
   const [prescriptions, setPrescriptions] = useState([]);
@@ -15,17 +15,18 @@ const PharmacistPrescriptions = () => {
   const [selectedRecord, setSelectedRecord] = useState(null);
   const [message, setMessage] = useState('');
   const [patients, setPatients] = useState([]);
+  const [doctors, setDoctors] = useState([]);
   const [isLoadingData, setIsLoadingData] = useState(true);
   const [errorData, setErrorData] = useState(null);
+  const [medicines, setMedicines] = useState([]);
+
   const [formData, setFormData] = useState({
     patient_id: '',
     doctor_id: '',
-    record_date: '',
-    diagnosis: '',
     treatment: '',
     notes: '',
     medication: '',
-    instructions: '',
+    record_date: '',
     dosage: '',
   });
   useEffect(() => {
@@ -41,9 +42,13 @@ const PharmacistPrescriptions = () => {
     const fetchData = async () => {
       try {
         setIsLoadingData(true);
-        // const fetchedPatients = await getPatients()
+        const [fetchedPatients, fetchedDoctors] = await Promise.all([
+          getPatients(),
+          getDoctors()
+        ])
 
-        // setPatients(fetchedPatients);
+        setPatients(fetchedPatients);
+        setDoctors(fetchedDoctors);
         setErrorData(null);
       } catch (err) {
         console.error('Failed to fetch data:', err);
@@ -75,6 +80,8 @@ const PharmacistPrescriptions = () => {
 
   const handleViewDetails = (prescription) => {
     setSelectedPrescription(prescription);
+
+    console.log(prescription);
     setShowDetailsModal(true);
   };
 
@@ -86,18 +93,16 @@ const PharmacistPrescriptions = () => {
   const handleAddRecord = () => {
     setSelectedRecord(null);
     setFormData({
-        patient_id: '',
-        doctor_id: '',
-        record_date: new Date().toISOString().split('T')[0],
-        diagnosis: '',
-        treatment: '',
-        medication: '',
-        instructions: '',
-        dosage: '',
-        notes: ''
+      patient_id: '',
+      doctor_id: '',
+      treatment: '',
+      medicines: '',
+      prescription_date: '',
+      dosage: '',
+      notes: ''
     });
     setShowForm(true);
-};
+  };
   const handleSaveRecord = async (e) => {
     e.preventDefault();
     try {
@@ -106,13 +111,11 @@ const PharmacistPrescriptions = () => {
       // إزالة الحقول غير المستخدمة قبل الإرسال
       const dataToSend = {
         patient_id: formData.patient_id,
-        record_date: formData.record_date,
-        diagnosis: formData.diagnosis,
         treatment: formData.treatment,
         notes: formData.notes,
-        medication: formData.medication,
-        instructions: formData.instructions,
+        medicines: formData.medicines,
         dosage: formData.dosage,
+        prescription_date: formData.prescription_date,
         doctor_id: formData.doctor_id,
       };
 
@@ -123,7 +126,7 @@ const PharmacistPrescriptions = () => {
         ));
         setMessage('تم تحديث السجل الطبي بنجاح.');
       } else {
-        result = await addMedicalRecord(dataToSend); // 👈 تم التعديل لإرسال البيانات الجديدة
+        result = await addPrescriptionsApi(dataToSend); // 👈 تم التعديل لإرسال البيانات الجديدة
         setPrescriptions([...prescriptions, result]);
         setMessage('تم إضافة سجل طبي جديد بنجاح.');
       }
@@ -201,37 +204,45 @@ const PharmacistPrescriptions = () => {
               </select>
             </div>
             <div>
-              <label htmlFor="record_date" className="block text-gray-700 text-sm font-bold mb-2">التاريخ</label>
-              <input type="date" id="record_date" name="record_date" value={formData.record_date} onChange={handleChange} className="shadow appearance-none border rounded-lg w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:shadow-outline text-right" required />
+              <label htmlFor="doctor_id" className="block text-gray-700 text-sm font-bold mb-2">اسم الطبيب</label>
+              <select
+                id="doctor_id"
+                name="doctor_id"
+                value={formData.doctor_id}
+                onChange={handleChange}
+                className="shadow appearance-none border rounded-lg w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:shadow-outline text-right"
+                required
+              >
+                <option value="" disabled>اختر الطبيب...</option>
+                {doctors.map((doctor) => {
+                  return <option key={doctor.id} value={doctor.id}>
+                    {doctor.name}
+                  </option>
+                }
+                )}
+              </select>
             </div>
-
-            {/* 👈 تم استبدال حقول القياسات الحيوية بحقلين جديدين */}
             <div>
-              <label htmlFor="diagnosis" className="block text-gray-700 text-sm font-bold mb-2">التشخيص</label>
-              <input type="text" id="diagnosis" name="diagnosis" value={formData.diagnosis} onChange={handleChange} className="shadow appearance-none border rounded-lg w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:shadow-outline text-right" required />
+              <label htmlFor="prescription_date" className="block text-gray-700 text-sm font-bold mb-2">التاريخ</label>
+              <input type="date" id="prescription_date" name="prescription_date" value={formData.prescription_date} onChange={handleChange} className="shadow appearance-none border rounded-lg w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:shadow-outline text-right" required />
             </div>
             <div>
               <label htmlFor="treatment" className="block text-gray-700 text-sm font-bold mb-2">العلاج</label>
               <textarea id="treatment" name="treatment" value={formData.treatment} onChange={handleChange} className="shadow appearance-none border rounded-lg w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:shadow-outline text-right h-24 resize-none" required></textarea>
             </div>
-
             <div>
               <label htmlFor="notes" className="block text-gray-700 text-sm font-bold mb-2">ملاحظات طبية</label>
               <textarea id="notes" name="notes" value={formData.notes} onChange={handleChange} className="shadow appearance-none border rounded-lg w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:shadow-outline text-right h-24 resize-none"></textarea>
             </div>
             <div>
-              <label htmlFor="medication" className="block text-gray-700 text-sm font-bold mb-2">الدواء</label>
-              <input type="text" id="medication" name="medication" value={formData.medication} onChange={handleChange} className="shadow appearance-none border rounded-lg w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:shadow-outline text-right" required />
+              <label htmlFor="medicines" className="block text-gray-700 text-sm font-bold mb-2">الدواء</label>
+              <input type="text" id="medicines" name="medicines" value={formData.medicines} onChange={handleChange} className="shadow appearance-none border rounded-lg w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:shadow-outline text-right" required />
             </div>
             <div>
               <label htmlFor="dosage" className="block text-gray-700 text-sm font-bold mb-2">الجرعة</label>
               <input type="text" id="dosage" name="dosage" value={formData.dosage} onChange={handleChange} className="shadow appearance-none border rounded-lg w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:shadow-outline text-right" required />
             </div>
-            <div>
-              <label htmlFor="instructions" className="block text-gray-700 text-sm font-bold mb-2">الأستعمال
-              </label>
-              <input type="text" id="instructions" name="instructions" value={formData.instructions} onChange={handleChange} className="shadow appearance-none border rounded-lg w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:shadow-outline text-right" required />
-            </div>
+
             <div className="flex justify-end space-x-4 space-x-reverse">
               <button
                 type="submit"
@@ -287,8 +298,8 @@ const PharmacistPrescriptions = () => {
                     return <tr key={p.id} className="border-b border-gray-200 hover:bg-gray-50">
                       <td className="py-3 px-6 text-right whitespace-nowrap">{p.id}</td>
                       <td className="py-3 px-6 text-right">{p.patient.name}</td>
-                      <td className="py-3 px-6 text-right">{p.doctor.name}</td>
-                      <td className="py-3 px-6 text-right">{p.prescription_date.split('T')[0]}</td>
+                      <td className="py-3 px-6 text-right">{p.doctor ? p.doctor.name : '-'}</td>
+                      <td className="py-3 px-6 text-right">{p.prescription_date ? p.prescription_date.split('T')[0] : '-'}</td>
                       <td className="py-3 px-6 text-right">
                         <span className={`px-2 py-1 rounded-full text-xs font-semibold  ${p.status === 'صُرفت' ? 'bg-green-200 text-green-800' :
                           p.status === 'مرفوضة' ? 'bg-red-200 text-red-800' :
@@ -339,10 +350,14 @@ const PharmacistPrescriptions = () => {
           <div className="bg-white p-8 rounded-lg shadow-xl w-full max-w-lg text-right relative">
             <h4 className="text-2xl font-semibold text-gray-800 mb-6">تفاصيل الوصفة الطبية</h4>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+              {
+
+
+              }
               <p><strong>رقم الوصفة:</strong> {selectedPrescription.id}</p>
-              <p><strong>اسم المريض:</strong> {selectedPrescription.patient.name}</p>
-              <p><strong>اسم الطبيب:</strong> {selectedPrescription.doctor.name}</p>
-              <p><strong>التاريخ:</strong> {selectedPrescription.prescription_date.split('T')[0]}</p>
+              <p><strong>اسم المريض:</strong> {selectedPrescription.patient && selectedPrescription.patient.name}</p>
+              <p><strong>اسم الطبيب:</strong> {selectedPrescription.doctor && selectedPrescription.doctor.name}</p>
+              <p><strong>التاريخ:</strong> {selectedPrescription.prescription_date && selectedPrescription.prescription_date.split('T')[0]}</p>
               <p><strong>الحالة:</strong> <span className={`px-2 py-1 rounded-full text-xs font-semibold ${selectedPrescription.status === 'صُرفت' ? 'bg-green-200 text-green-800' :
                 selectedPrescription.status === 'مرفوضة' ? 'bg-red-200 text-red-800' :
                   'bg-green-200 text-green-800'
@@ -353,7 +368,7 @@ const PharmacistPrescriptions = () => {
               <Pill size={20} className="ml-2" />
               الأدوية:
             </h5>
-            <div className="overflow-x-auto mb-6">
+            {/* <div className="overflow-x-auto mb-6">
               <table className="min-w-full bg-gray-50 border border-gray-200 rounded-lg">
                 <thead>
                   <tr className="bg-gray-100 text-gray-600 uppercase text-xs leading-normal">
@@ -380,7 +395,7 @@ const PharmacistPrescriptions = () => {
                     ))}
                 </tbody>
               </table>
-            </div>
+            </div> */}
 
             <p className="mb-6"><strong>ملاحظات:</strong> {selectedPrescription.notes || 'لا توجد ملاحظات.'}</p>
 

@@ -17,3 +17,17 @@ export const getPrescriptionsApi = async () => {
         throw error;
     }
 }
+export const addPrescriptionsApi = async (data) => {
+    try {
+        const response=await axios.post(`${API_URL}/prescriptions`,data,{
+            headers:{
+                Authorization:`Bearer ${getToken()}`,
+                "Content-Type":'application/json'
+            }
+        })
+        return response.data
+    } catch (error) {
+        console.error('Error fetching prescriptions:', error.response?.data || error.message);
+        throw error;
+    }
+}
