@@ -214,7 +214,7 @@ const RegisterPage = () => {
                 id="dob"
                 name="dob"
                 required
-                className="shadow appearance-none border rounded-lg w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:shadow-outline focus:border-blue-500 text-right"
+                className="shadow appearance-none border roun ded-lg w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:shadow-outline focus:border-blue-500 text-right"
                 value={formData.dob}
                 onChange={handleChange}
               />

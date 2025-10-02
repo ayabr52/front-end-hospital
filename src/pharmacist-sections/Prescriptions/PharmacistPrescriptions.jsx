@@ -427,7 +427,7 @@ const PharmacistPrescriptions = () => {
                       <td className="py-3 px-6 text-right">{p.patient && p.patient.name}</td>
                       <td className="py-3 px-6 text-right">
                         {
-                          p.doctor.name
+                          p.doctor?p.doctor.name:'-'
                         }
                       </td>
                       <td className="py-3 px-6 text-right">{p.prescription_date ? p.prescription_date.split('T')[0] : '-'}
