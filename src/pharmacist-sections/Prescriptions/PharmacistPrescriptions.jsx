@@ -4,7 +4,7 @@ import { CheckCircle, XCircle, Eye, Pill, Loader, Plus, Info, TrashIcon } from '
 import { usePrescriptions } from '../../hooks/usePrescriptions';
 import Skeleton from 'react-loading-skeleton';
 import { getDoctors, getPatients, updateMedicalRecord } from '../../services/api-service';
-import { addPrescriptionsApi } from '../../services/prescriptions';
+import { addPrescriptionsApi, removePrescriptionsApi } from '../../services/prescriptions';
 import { fetchMedicines } from '../../services/MedicineService';
 
 const PharmacistPrescriptions = () => {
@@ -180,6 +180,20 @@ const PharmacistPrescriptions = () => {
       ...prev,
       medicines: prev.medicines.filter((_, i) => i !== index)
     }));
+  }
+  const handleRemovePrescription = async (id) => {
+    try {
+      await removePrescriptionsApi(id);
+      // بعد الحذف، قم بتحديث قائمة الوصفات
+      const resPrescriptions = await getPrescriptions();
+      if (resPrescriptions.status === 'success') {
+        setPrescriptions(resPrescriptions.prescriptions);
+      }
+      setMessage('تم حذف الوصفة الطبية بنجاح.');
+    } catch (error) {
+      console.error('Failed to remove prescription:', error);
+      setMessage('حدث خطأ أثناء حذف الوصفة الطبية.');
+    }
   }
   if (isLoadingData) {
     return (
@@ -419,13 +433,13 @@ const PharmacistPrescriptions = () => {
                     <td colSpan="6" className="py-4 px-6 text-center text-gray-500">لا توجد وصفات طبية حالياً.</td>
                   </tr>
                 ) : (
-                  prescriptions.map((p) => {                    
+                  prescriptions.map((p) => {
                     return <tr key={p.id} className="border-b border-gray-200 hover:bg-gray-50">
                       <td className="py-3 px-6 text-right whitespace-nowrap">{p.id}</td>
                       <td className="py-3 px-6 text-right">{p.patient && p.patient.name}</td>
                       <td className="py-3 px-6 text-right">
                         {
-                          p.doctor?p.doctor.name:'-'
+                          p.doctor ? p.doctor.name : '-'
                         }
                       </td>
                       <td className="py-3 px-6 text-right">{p.prescription_date ? p.prescription_date.split('T')[0] : '-'}
@@ -447,6 +461,13 @@ const PharmacistPrescriptions = () => {
                             title="عرض التفاصيل"
                           >
                             <Eye size={16} />
+                          </button>
+                          <button
+                            onClick={() => handleRemovePrescription(p.id)}
+                            className="w-8 h-8 flex items-center justify-center rounded-full bg-red-500 text-white hover:bg-red-600 transition-colors duration-200"
+                            title="حذف الوصفة"
+                          >
+                            <TrashIcon size={16} />
                           </button>
                           {p.status === 'معلقة' && (
                             <>
