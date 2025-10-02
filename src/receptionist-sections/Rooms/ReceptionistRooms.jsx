@@ -32,7 +32,7 @@ const ReceptionistRooms = () => {
               <th className="py-3 px-6 text-right">القسم</th>
               <th className="py-3 px-6 text-right">عدد الأسرة</th>
               <th className="py-3 px-6 text-right">الحالة</th>
-              <th className="py-3 px-6 text-center">الإجراءات</th>
+              {/* <th className="py-3 px-6 text-center">الإجراءات</th> */}
             </tr>
           </thead>
           <tbody className="text-gray-700 text-sm font-light">
@@ -54,7 +54,7 @@ const ReceptionistRooms = () => {
                       {room.status}
                     </span>
                   </td>
-                  <td className="py-3 px-6 text-center whitespace-nowrap">
+                  {/* <td className="py-3 px-6 text-center whitespace-nowrap">
                     <button
                       onClick={() => handleToggleRoomStatus(room.id)}
                       className={`w-8 h-8 flex items-center justify-center rounded-full ${
@@ -64,7 +64,7 @@ const ReceptionistRooms = () => {
                     >
                       {room.status === 'متاحة' ? <XCircle size={16} /> : <CheckCircle size={16} />}
                     </button>
-                  </td>
+                  </td> */}
                 </tr>
               ))
             )}

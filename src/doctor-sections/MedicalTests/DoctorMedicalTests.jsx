@@ -1,10 +1,10 @@
 // src/doctor-sections/MedicalTests/DoctorMedicalTests.jsx
 import React, { useState, useEffect } from 'react';
 import { Plus, Edit, Trash2, Loader, Info } from 'lucide-react';
-import { 
-    getMedicalRecords, 
-    addMedicalRecord, 
-    updateMedicalRecord, 
+import {
+    getMedicalRecords,
+    addMedicalRecord,
+    updateMedicalRecord,
     deleteMedicalRecord,
     getPatients,
     getDoctors
@@ -25,8 +25,11 @@ const DoctorMedicalTests = () => {
         patient_id: '',
         doctor_id: '',
         record_date: '',
-        diagnosis: '', // 👈 تم التغيير هنا
-        treatment: '', // 👈 تم التغيير هنا
+        diagnosis: '',
+        treatment: '',
+        medication: '',
+        instructions: '',
+        dosage: '',
         notes: ''
     });
     const [message, setMessage] = useState('');
@@ -63,8 +66,11 @@ const DoctorMedicalTests = () => {
             patient_id: '',
             doctor_id: currentDoctorId,
             record_date: new Date().toISOString().split('T')[0],
-            diagnosis: '', // 👈 تم التغيير هنا
-            treatment: '', // 👈 تم التغيير هنا
+            diagnosis: '',
+            treatment: '',
+            medication: '',
+            instructions: '',
+            dosage: '',
             notes: ''
         });
         setShowForm(true);
@@ -76,8 +82,11 @@ const DoctorMedicalTests = () => {
             patient_id: record.patient_id,
             doctor_id: record.doctor_id,
             record_date: record.record_date,
-            diagnosis: record.diagnosis, // 👈 تم التغيير هنا
-            treatment: record.treatment, // 👈 تم التغيير هنا
+            diagnosis: record.diagnosis,
+            treatment: record.treatment,
+            medication: formData.medication,
+            instructions: formData.instructions,
+            dosage: formData.dosage,
             notes: record.notes
         });
         setShowForm(true);
@@ -114,11 +123,14 @@ const DoctorMedicalTests = () => {
             // إزالة الحقول غير المستخدمة قبل الإرسال
             const dataToSend = {
                 patient_id: formData.patient_id,
-                doctor_id: formData.doctor_id,
                 record_date: formData.record_date,
                 diagnosis: formData.diagnosis,
                 treatment: formData.treatment,
-                notes: formData.notes
+                notes: formData.notes,
+                medication: formData.medication,
+                instructions: formData.instructions,
+                dosage: formData.dosage,
+                doctor_id: formData.doctor_id,
             };
 
             if (selectedRecord) {
@@ -215,7 +227,7 @@ const DoctorMedicalTests = () => {
                             <label htmlFor="record_date" className="block text-gray-700 text-sm font-bold mb-2">التاريخ</label>
                             <input type="date" id="record_date" name="record_date" value={formData.record_date} onChange={handleChange} className="shadow appearance-none border rounded-lg w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:shadow-outline text-right" required />
                         </div>
-                        
+
                         {/* 👈 تم استبدال حقول القياسات الحيوية بحقلين جديدين */}
                         <div>
                             <label htmlFor="diagnosis" className="block text-gray-700 text-sm font-bold mb-2">التشخيص</label>
@@ -225,10 +237,23 @@ const DoctorMedicalTests = () => {
                             <label htmlFor="treatment" className="block text-gray-700 text-sm font-bold mb-2">العلاج</label>
                             <textarea id="treatment" name="treatment" value={formData.treatment} onChange={handleChange} className="shadow appearance-none border rounded-lg w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:shadow-outline text-right h-24 resize-none" required></textarea>
                         </div>
-                        
+
                         <div>
                             <label htmlFor="notes" className="block text-gray-700 text-sm font-bold mb-2">ملاحظات طبية</label>
                             <textarea id="notes" name="notes" value={formData.notes} onChange={handleChange} className="shadow appearance-none border rounded-lg w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:shadow-outline text-right h-24 resize-none"></textarea>
+                        </div>
+                        <div>
+                            <label htmlFor="medication" className="block text-gray-700 text-sm font-bold mb-2">الدواء</label>
+                            <input type="text" id="medication" name="medication" value={formData.medication} onChange={handleChange} className="shadow appearance-none border rounded-lg w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:shadow-outline text-right" required />
+                        </div>
+                        <div>
+                            <label htmlFor="dosage" className="block text-gray-700 text-sm font-bold mb-2">الجرعة</label>
+                            <input type="text" id="dosage" name="dosage" value={formData.dosage} onChange={handleChange} className="shadow appearance-none border rounded-lg w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:shadow-outline text-right" required />
+                        </div>
+                        <div>
+                            <label htmlFor="instructions" className="block text-gray-700 text-sm font-bold mb-2">الأستعمال
+                            </label>
+                            <input type="text" id="instructions" name="instructions" value={formData.instructions} onChange={handleChange} className="shadow appearance-none border rounded-lg w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:shadow-outline text-right" required />
                         </div>
                         <div className="flex justify-end space-x-4 space-x-reverse">
                             <button
