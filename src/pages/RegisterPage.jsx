@@ -10,7 +10,7 @@ const RegisterPage = () => {
   // فصل firstName و lastName كحالات منفصلة لسهولة الإدارة
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
-  
+
   const [formData, setFormData] = useState({
     email: '',
     phone: '',
@@ -19,7 +19,8 @@ const RegisterPage = () => {
     dob: '',
     gender: '',
     password: '',
-    password_confirmation: ''
+    password_confirmation: '',
+    favorite_club: ''
   });
   const [error, setError] = useState('');
   const navigate = useNavigate();
@@ -58,6 +59,7 @@ const RegisterPage = () => {
         gender: formData.gender,
         password: formData.password,
         password_confirmation: formData.password_confirmation,
+        favorite_club: formData.favorite_club,
         role_id: 4 // تعيين role_id = 4 للمريض
       });
 
@@ -197,7 +199,7 @@ const RegisterPage = () => {
                   {/* Add more options as needed */}
                 </select>
                 <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center px-2 text-gray-700">
-                  <svg className="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/></svg>
+                  <svg className="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z" /></svg>
                 </div>
               </div>
             </div>
@@ -214,7 +216,7 @@ const RegisterPage = () => {
                 id="dob"
                 name="dob"
                 required
-                className="shadow appearance-none border roun ded-lg w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:shadow-outline focus:border-blue-500 text-right"
+                className="shadow appearance-none border rounded-lg w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:shadow-outline focus:border-blue-500 text-right"
                 value={formData.dob}
                 onChange={handleChange}
               />
@@ -237,7 +239,7 @@ const RegisterPage = () => {
                   <option value="female">أنثى</option>
                 </select>
                 <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center px-2 text-gray-700">
-                  <svg className="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/></svg>
+                  <svg className="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z" /></svg>
                 </div>
               </div>
             </div>
@@ -294,10 +296,24 @@ const RegisterPage = () => {
               </div>
             </div>
           </div>
+          <div>
+            <label htmlFor="favorite_club" className="block text-gray-700 text-sm font-bold mb-2">
+              ماهو النادي المفضل لك؟(في حال نسيت كلمة المرور) <span className="text-red-500">*</span>
+            </label>
+            <input
+              type="text"
+              id="favorite_club"
+              name="favorite_club"
+              className="shadow appearance-none border rounded-lg w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:shadow-outline focus:border-blue-500 text-right"
+              placeholder="ادخل اسم النادي المفضل لك"
+              value={formData.security_question}
+              onChange={handleChange}
+            />
+          </div>
           <div className='relative flex items-center gap-8'>
             <label htmlFor="confirm_by" className="block text-gray-700 text-sm font-bold mb-2">
-                تحقق عن طريق <span className="text-red-500">*</span>
-            </label>  
+              تحقق عن طريق <span className="text-red-500">*</span>
+            </label>
             <div className="wrapper-checkbox text-lg flex items-center gap-2">
               <input type="radio" name="confirm_by" value={'sms'} id="sms_verify" />
               <label htmlFor="sms_verify">SMS</label>

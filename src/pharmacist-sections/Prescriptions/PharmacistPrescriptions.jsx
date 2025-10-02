@@ -419,9 +419,7 @@ const PharmacistPrescriptions = () => {
                     <td colSpan="6" className="py-4 px-6 text-center text-gray-500">لا توجد وصفات طبية حالياً.</td>
                   </tr>
                 ) : (
-                  prescriptions.map((p) => {
-                    console.log(p);
-                    
+                  prescriptions.map((p) => {                    
                     return <tr key={p.id} className="border-b border-gray-200 hover:bg-gray-50">
                       <td className="py-3 px-6 text-right whitespace-nowrap">{p.id}</td>
                       <td className="py-3 px-6 text-right">{p.patient && p.patient.name}</td>

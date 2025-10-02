@@ -23,6 +23,7 @@ import AccountantDashboard from './dashboards/AccountantDashboard.jsx';
 import PharmacistDashboard from './dashboards/PharmacistDashboard.jsx';
 import React, { useEffect } from 'react';
 import 'react-loading-skeleton/dist/skeleton.css'
+import ResetPassword from './pages/ResetPassword.jsx';
 
 function App() {
     // استخدام useLocation هنا صحيح لأنه سيتم عرض App داخل BrowserRouter في main.jsx
@@ -51,13 +52,13 @@ function App() {
             <Routes>
                 <Route path="/" element={
                     <>
-                        <Home/>
-                        <Services/>
-                        <Doctors/>
-                        <About/>
-                        <Departments/>
+                        <Home />
+                        <Services />
+                        <Doctors />
+                        <About />
+                        <Departments />
                         <Tips />
-                        <ContactUs/>
+                        <ContactUs />
                         <FloatingActionsButton />
                         <ScrollToTopButton />
                     </>
@@ -65,6 +66,7 @@ function App() {
 
                 <Route path="/login" element={<LoginPage />} />
                 <Route path="/register" element={<RegisterPage />} />
+                <Route path="/reset-password" element={<ResetPassword />} />
 
                 <Route path="/dashboard/admin" element={
                     <ProtectedRoute requiredRoles={['admin']}>

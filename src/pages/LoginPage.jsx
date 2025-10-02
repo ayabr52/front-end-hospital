@@ -1,7 +1,7 @@
 // src/pages/LoginPage.jsx
 import React, { useState } from 'react';
 import { Eye, EyeOff, Fingerprint } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { login } from '../services/AuthService'; // استيراد خدمة المصادقة الحقيقية
 
 const LoginPage = () => {
@@ -111,9 +111,9 @@ const LoginPage = () => {
             <p className="text-red-500 text-sm text-center">{error}</p>
           )}
           <div className="text-left">
-            <a href="#" className="inline-block align-baseline font-bold text-sm text-blue-600 hover:text-blue-800">
+            <Link to="/reset-password" className="inline-block align-baseline font-bold text-sm text-blue-600 hover:text-blue-800">
               هل نسيت كلمة المرور؟
-            </a>
+            </Link>
           </div>
           <div>
             <button
