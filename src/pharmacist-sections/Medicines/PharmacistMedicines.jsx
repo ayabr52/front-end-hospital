@@ -1,22 +1,26 @@
 // src/pharmacist-sections/Medicines/PharmacistMedicines.jsx
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Plus, Edit, Trash2, Package } from 'lucide-react';
+import { deleteMedicine, fetchMedicines, storeMedicine, updateMedicine } from '../../services/MedicineService';
+import Skeleton from 'react-loading-skeleton';
 
 const PharmacistMedicines = () => {
   const [medicines, setMedicines] = useState([]);
   const [showForm, setShowForm] = useState(false);
   const [selectedMedicine, setSelectedMedicine] = useState(null);
+  const [error, setError] = useState(null)
+  const [isLoading, setIsLoading] = useState(false)
   const [formData, setFormData] = useState({
     name: '',
-    quantity: '',
+    stock_quantity: '',
     price: '',
     expiry_date: '',
     description: '',
   });
 
-  const handleAddMedicine = () => {
+  const handleAddMedicine = async () => {
     setSelectedMedicine(null);
-    setFormData({ name: '', quantity: '', price: '', expiry_date: '', description: '' });
+    setFormData({ name: '', stock_quantity: '', price: '', expiry_date: '', description: '' });
     setShowForm(true);
   };
 
@@ -26,20 +30,69 @@ const PharmacistMedicines = () => {
     setShowForm(true);
   };
 
-  const handleDeleteMedicine = (id) => {
+  const handleDeleteMedicine = async (id) => {
     if (window.confirm('هل أنت متأكد أنك تريد حذف هذا الدواء؟')) {
-      setMedicines(medicines.filter(medicine => medicine.id !== id));
+      setIsLoading(true);
+      try {
+        const res = await deleteMedicine(id);
+        if (res.status === 'success') {
+          setMedicines(medicines.filter(medicine => medicine.id !== id));
+          alert('تم حذف الدواء بنجاح');
+        } else {
+          setError('حدث خطأ أثناء حذف الدواء');
+        }
+      } catch (error) {
+        setError(error.message || 'حدث خطأ أثناء حذف الدواء');
+        alert(error.message || 'حدث خطأ أثناء حذف الدواء');
+      } finally {
+        setIsLoading(false);
+      }
     }
   };
 
-  const handleSaveMedicine = (e) => {
+  const handleSaveMedicine = async (e) => {
     e.preventDefault();
     if (selectedMedicine) {
-      setMedicines(medicines.map(medicine =>
-        medicine.id === selectedMedicine.id ? { ...formData, id: selectedMedicine.id } : medicine
-      ));
-    } else {
-      setMedicines([...medicines, { ...formData, id: Date.now() }]);
+      try {
+        const response = await updateMedicine(selectedMedicine.id, {
+          name: formData.name,
+          stock_quantity: formData.stock_quantity,
+          price: formData.price,
+          expiry_date: formData.expiry_date,
+          description: formData.description,
+        });
+        console.log(response);
+        
+        if (response.status === 'success') {
+          alert('تم تحديث الدواء بنجاح');
+          setMedicines(medicines.map(medicine =>
+            medicine.id === selectedMedicine.id ? { ...formData, id: selectedMedicine.id } : medicine
+          ));
+        } else {
+          setError('حدث خطأ أثناء تحديث الدواء');
+        }
+      } catch (error) {
+        setError(error.message || 'حدث خطأ غير متوقع أثناء تحديث الدواء');
+      }
+    }
+    else {
+      try {
+        const response = await storeMedicine({
+          name: formData.name,
+          stock_quantity: formData.stock_quantity,
+          price: formData.price,
+          expiry_date: formData.expiry_date,
+          description: formData.description,
+        });
+        if (response.status === 'success') {
+          alert('تمت اضافة الدواء');
+          setMedicines([...medicines, { ...formData, id: Date.now() }]);
+        } else {
+          setError('حدث خطأ أثناء إضافة الدواء');
+        }
+      } catch (error) {
+        setError(error.message || 'حدث خطأ غير متوقع أثناء إضافة الدواء');
+      }
     }
     setShowForm(false);
   };
@@ -52,7 +105,26 @@ const PharmacistMedicines = () => {
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
-
+  useEffect(() => {
+    const handleFetchMedicines = async () => {
+      try {
+        setError(false)
+        setIsLoading(true)
+        const medicinesRes = await fetchMedicines();
+        setMedicines(medicinesRes.medicines);
+        return;
+      } catch (error) {
+        // Handle error if needed
+        console.error('Failed to fetch medicines:', error);
+        setError(error.message)
+        return;
+      }
+      finally {
+        setIsLoading(false)
+      }
+    }
+    handleFetchMedicines()
+  }, [])
   return (
     <div className="bg-white p-6 rounded-lg shadow-md text-right">
       <h3 className="text-2xl font-semibold text-gray-800 mb-6">إدارة الأدوية</h3>
@@ -78,8 +150,8 @@ const PharmacistMedicines = () => {
               <input type="text" id="name" name="name" value={formData.name} onChange={handleChange} className="shadow appearance-none border rounded-lg w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:shadow-outline text-right" required />
             </div>
             <div>
-              <label htmlFor="quantity" className="block text-gray-700 text-sm font-bold mb-2">الكمية المتوفرة</label>
-              <input type="number" id="quantity" name="quantity" value={formData.quantity} onChange={handleChange} className="shadow appearance-none border rounded-lg w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:shadow-outline text-right" required />
+              <label htmlFor="stock_quantity" className="block text-gray-700 text-sm font-bold mb-2">الكمية المتوفرة</label>
+              <input type="number" id="stock_quantity" name="stock_quantity" value={formData.stock_quantity} onChange={handleChange} className="shadow appearance-none border rounded-lg w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:shadow-outline text-right" required />
             </div>
             <div>
               <label htmlFor="price" className="block text-gray-700 text-sm font-bold mb-2">السعر</label>
@@ -125,38 +197,52 @@ const PharmacistMedicines = () => {
             </tr>
           </thead>
           <tbody className="text-gray-700 text-sm font-light">
-            {medicines.length === 0 ? (
+            {isLoading ?
               <tr>
-                <td colSpan="5" className="py-4 px-6 text-center text-gray-500">لا توجد أدوية حالياً.</td>
+                <td colSpan="5" className='py-2'>
+                  <Skeleton borderRadius={8} height={6} className='py-4' />
+                </td>
               </tr>
-            ) : (
-              medicines.map((medicine) => (
-                <tr key={medicine.id} className="border-b border-gray-200 hover:bg-gray-50">
-                  <td className="py-3 px-6 text-right whitespace-nowrap">{medicine.name}</td>
-                  <td className="py-3 px-6 text-right">{medicine.quantity}</td>
-                  <td className="py-3 px-6 text-right">{medicine.price} $</td>
-                  <td className="py-3 px-6 text-right">{medicine.expiry_date}</td>
-                  <td className="py-3 px-6 text-center whitespace-nowrap">
-                    <div className="flex item-center justify-center gap-4">
-                      <button
-                        onClick={() => handleEditMedicine(medicine)}
-                        className="w-8 h-8 flex items-center justify-center rounded-full bg-blue-500 text-white hover:bg-blue-600 transition-colors duration-200"
-                        title="تعديل"
-                      >
-                        <Edit size={16} />
-                      </button>
-                      <button
-                        onClick={() => handleDeleteMedicine(medicine.id)}
-                        className="w-8 h-8 flex items-center justify-center rounded-full bg-red-500 text-white hover:bg-red-600 transition-colors duration-200"
-                        title="حذف"
-                      >
-                        <Trash2 size={16} />
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              ))
-            )}
+              : error ?
+                (
+                  <tr>
+                    <td colSpan="5" className="py-4 px-6 text-center text-red-500">
+                      حدث خطأ أثناء تحميل قائمة الأدوية. الرجاء المحاولة مرة أخرى.
+                    </td>
+                  </tr>
+                ) :
+                medicines.length === 0 ? (
+                  <tr>
+                    <td colSpan="5" className="py-4 px-6 text-center text-gray-500">لا توجد أدوية حالياً.</td>
+                  </tr>
+                ) : (
+                  medicines.map((medicine) => (
+                    <tr key={medicine.id} className="border-b border-gray-200 hover:bg-gray-50">
+                      <td className="py-3 px-6 text-right whitespace-nowrap">{medicine.name}</td>
+                      <td className="py-3 px-6 text-right">{medicine.stock_quantity}</td>
+                      <td className="py-3 px-6 text-right">{medicine.price} $</td>
+                      <td className="py-3 px-6 text-right">{medicine.expiry_date.split('T')[0]}</td>
+                      <td className="py-3 px-6 text-center whitespace-nowrap">
+                        <div className="flex item-center justify-center gap-4">
+                          <button
+                            onClick={() => handleEditMedicine(medicine)}
+                            className="w-8 h-8 flex items-center justify-center rounded-full bg-blue-500 text-white hover:bg-blue-600 transition-colors duration-200"
+                            title="تعديل"
+                          >
+                            <Edit size={16} />
+                          </button>
+                          <button
+                            onClick={() => handleDeleteMedicine(medicine.id)}
+                            className="w-8 h-8 flex items-center justify-center rounded-full bg-red-500 text-white hover:bg-red-600 transition-colors duration-200"
+                            title="حذف"
+                          >
+                            <Trash2 size={16} />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))
+                )}
           </tbody>
         </table>
       </div>
